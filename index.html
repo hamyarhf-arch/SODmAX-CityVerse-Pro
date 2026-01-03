@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>پنل کاربری SODmAX CityVerse - نسخه کامل</title>
+    <title>پنل کاربری SODmAX CityVerse - نسخه کامل (تست شده)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -64,6 +64,7 @@
             --z-modal: 300;
             --z-toast: 400;
             --z-auth: 500;
+            --z-effect: 10000;
         }
 
         * {
@@ -1184,6 +1185,150 @@
             line-height: 1.4;
         }
 
+        /* بهبود کیف پول برای موبایل */
+        .wallet-balance-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-md);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-sm);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all var(--transition-base);
+        }
+        
+        .wallet-balance-item:active {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(-4px);
+        }
+        
+        .wallet-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-left: var(--space-md);
+            flex-shrink: 0;
+        }
+        
+        .wallet-info {
+            flex: 1;
+        }
+        
+        .wallet-amount {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        
+        .wallet-currency {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+        
+        .wallet-actions {
+            display: flex;
+            gap: var(--space-xs);
+            margin-top: var(--space-md);
+        }
+        
+        .wallet-action-btn {
+            flex: 1;
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* تراکنش‌های بهبود یافته */
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-sm);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-xs);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .transaction-item:active {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .transaction-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin-left: var(--space-sm);
+            flex-shrink: 0;
+        }
+        
+        .transaction-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .transaction-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .transaction-date {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+        
+        .transaction-amount {
+            font-size: 14px;
+            font-weight: 900;
+            text-align: left;
+            padding-right: var(--space-sm);
+            white-space: nowrap;
+        }
+
+        /* افکت ماینینگ */
+        .mining-effect {
+            position: fixed;
+            color: var(--primary-light);
+            font-weight: 900;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: var(--z-effect);
+            text-shadow: 0 0 20px var(--primary);
+            animation: miningFloat 1s ease-out forwards;
+            transform-origin: center;
+        }
+        
+        .mining-effect span {
+            display: block;
+            padding: 4px 12px;
+            background: rgba(0, 102, 255, 0.2);
+            border-radius: var(--radius-full);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+        
         /* انیمیشن‌های موبایل */
         @keyframes pulse {
             0%, 100% {
@@ -1252,6 +1397,17 @@
             to {
                 transform: translateY(0);
                 opacity: 1;
+            }
+        }
+
+        @keyframes miningFloat {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -150px) scale(1.5);
+                opacity: 0;
             }
         }
 
@@ -1447,6 +1603,16 @@
                     </div>
                 </div>
                 
+                <!-- فیلد جدید: کد دعوت -->
+                <div class="form-group">
+                    <label class="form-label" for="registerReferralCode">کد دعوت (اختیاری)</label>
+                    <input type="text" id="registerReferralCode" class="form-input" placeholder="کد دعوت معرف خود را وارد کنید">
+                    <div class="form-error" id="referralCodeError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        کد دعوت معتبر نیست
+                    </div>
+                </div>
+                
                 <button type="submit" class="auth-btn" id="registerBtn">
                     <i class="fas fa-user-plus"></i>
                     ایجاد حساب کاربری
@@ -1569,6 +1735,11 @@
                     <a href="#wallet" class="nav-item-mobile" onclick="showSectionMobile('wallet')">
                         <div class="nav-icon-mobile"><i class="fas fa-wallet"></i></div>
                         <div class="nav-label-mobile">کیف پول</div>
+                    </a>
+                    <a href="#invite" class="nav-item-mobile" onclick="showSectionMobile('invite')">
+                        <div class="nav-icon-mobile"><i class="fas fa-user-plus"></i></div>
+                        <div class="nav-label-mobile">دعوت دوستان</div>
+                        <span class="nav-badge-mobile" id="inviteBadge">24</span>
                     </a>
                 </div>
                 
@@ -1809,48 +1980,46 @@
                         کیف پول چند ارزی
                     </h3>
                     
-                    <div style="margin-bottom: var(--space-lg);">
-                        <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
-                            <div style="width: 40px; height: 40px; background: rgba(0, 102, 255, 0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--primary);">
-                                <i class="fas fa-coins"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="font-size: 24px; font-weight: 900; color: var(--text-primary);" id="walletSodBalance">1,845,200</div>
-                                <div style="font-size: 12px; color: var(--text-tertiary);">SOD</div>
-                            </div>
+                    <div class="wallet-balance-item" onclick="showModalMobile('walletModal')">
+                        <div class="wallet-icon" style="background: rgba(0, 102, 255, 0.2); color: var(--primary);">
+                            <i class="fas fa-coins"></i>
                         </div>
-                        
-                        <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
-                            <div style="width: 40px; height: 40px; background: rgba(0, 212, 170, 0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--secondary);">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="font-size: 24px; font-weight: 900; color: var(--text-primary);" id="walletTomanBalance">28,400</div>
-                                <div style="font-size: 12px; color: var(--text-tertiary);">تومان</div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                            <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #3b82f6;">
-                                <i class="fas fa-dollar-sign"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="font-size: 24px; font-weight: 900; color: var(--text-primary);">120.5</div>
-                                <div style="font-size: 12px; color: var(--text-tertiary);">USDT</div>
-                            </div>
+                        <div class="wallet-info">
+                            <div class="wallet-amount" id="walletSodBalance">1,845,200</div>
+                            <div class="wallet-currency">SOD</div>
                         </div>
                     </div>
                     
-                    <div style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-lg);">
-                        <button class="btn-mobile btn-mobile-success" style="flex: 1;" onclick="withdrawTomanMobile()">
+                    <div class="wallet-balance-item" onclick="showModalMobile('walletModal')">
+                        <div class="wallet-icon" style="background: rgba(0, 212, 170, 0.2); color: var(--secondary);">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="wallet-info">
+                            <div class="wallet-amount" id="walletTomanBalance">28,400</div>
+                            <div class="wallet-currency">تومان</div>
+                        </div>
+                    </div>
+                    
+                    <div class="wallet-balance-item" onclick="showModalMobile('walletModal')">
+                        <div class="wallet-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="wallet-info">
+                            <div class="wallet-amount">120.5</div>
+                            <div class="wallet-currency">USDT</div>
+                        </div>
+                    </div>
+                    
+                    <div class="wallet-actions">
+                        <button class="wallet-action-btn" style="background: var(--gradient-secondary); color: white;" onclick="withdrawTomanMobile()">
                             <i class="fas fa-download"></i>
                             برداشت
                         </button>
-                        <button class="btn-mobile btn-mobile-secondary" style="flex: 1;" onclick="buySodMobile()">
+                        <button class="wallet-action-btn" style="background: rgba(255, 255, 255, 0.1); color: var(--text-primary);" onclick="buySodMobile()">
                             <i class="fas fa-shopping-cart"></i>
                             خرید SOD
                         </button>
-                        <button class="btn-mobile btn-mobile-primary" style="flex: 1;" onclick="convertCurrencyMobile()">
+                        <button class="wallet-action-btn" style="background: var(--gradient-primary); color: white;" onclick="convertCurrencyMobile()">
                             <i class="fas fa-exchange-alt"></i>
                             تبدیل
                         </button>
@@ -1865,6 +2034,112 @@
                     
                     <div style="max-height: 300px; overflow-y: auto;" id="transactionHistory">
                         <!-- تراکنش‌ها به صورت داینامیک اضافه می‌شوند -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- دعوت دوستان -->
+            <section id="invite" class="content-section-mobile">
+                <div class="mobile-card">
+                    <h3 class="card-title-mobile">
+                        <i class="fas fa-user-plus"></i>
+                        دعوت دوستان و کسب درآمد
+                    </h3>
+                    
+                    <div style="text-align: center; margin-bottom: var(--space-xl);">
+                        <div style="font-size: 48px; font-weight: 900; color: var(--primary); margin-bottom: var(--space-sm);">
+                            🤝
+                        </div>
+                        <div style="font-size: 24px; font-weight: 900; color: var(--text-primary); margin-bottom: var(--space-xs);" id="referralCountMobile">
+                            ۲۴ دوست دعوت کرده‌اید
+                        </div>
+                        <div style="font-size: 16px; color: var(--text-tertiary); margin-bottom: var(--space-lg);">
+                            تاکنون <span style="color: var(--secondary); font-weight: 700;" id="totalReferralEarningsMobile">۱۲۴,۰۰۰</span> تومان از دعوت دوستان کسب کرده‌اید
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: var(--space-lg);">
+                        <div style="background: rgba(0, 102, 255, 0.1); border: 2px dashed var(--primary); border-radius: var(--radius-lg); padding: var(--space-lg); text-align: center; margin-bottom: var(--space-md);">
+                            <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: var(--space-sm);">
+                                لینک دعوت اختصاصی شما
+                            </div>
+                            <div style="font-size: 14px; font-weight: 700; color: var(--primary); word-break: break-all; margin-bottom: var(--space-md);" id="referralLinkMobile">
+                                https://sodmax.city/invite/ali123
+                            </div>
+                            <button class="btn-mobile btn-mobile-primary" onclick="copyReferralLink()">
+                                <i class="fas fa-copy"></i>
+                                کپی لینک دعوت
+                            </button>
+                        </div>
+                        
+                        <div style="background: rgba(0, 212, 170, 0.1); border: 1px solid rgba(0, 212, 170, 0.3); border-radius: var(--radius-lg); padding: var(--space-md);">
+                            <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
+                                <div style="width: 36px; height: 36px; background: var(--gradient-secondary); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                    <i class="fas fa-gift"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 14px; font-weight: 900; color: var(--text-primary);">پاداش دعوت</div>
+                                    <div style="font-size: 12px; color: var(--text-tertiary);">
+                                        به ازای هر دعوت موفق: <span style="color: var(--secondary); font-weight: 700;">۱,۰۰۰ تومان</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); margin-bottom: var(--space-lg);">
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: var(--space-md); border-radius: var(--radius-lg); text-align: center;">
+                            <div style="font-size: 24px; font-weight: 900; color: var(--primary);" id="totalInvitesMobile">۲۴</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">کل دعوت‌ها</div>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: var(--space-md); border-radius: var(--radius-lg); text-align: center;">
+                            <div style="font-size: 24px; font-weight: 900; color: var(--secondary);" id="activeInvitesMobile">۱۸</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">فعال</div>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: var(--space-md); border-radius: var(--radius-lg); text-align: center;">
+                            <div style="font-size: 24px; font-weight: 900; color: var(--accent);" id="pendingInvitesMobile">۳</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">در انتظار</div>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.05); padding: var(--space-md); border-radius: var(--radius-lg); text-align: center;">
+                            <div style="font-size: 24px; font-weight: 900; color: var(--premium);" id="totalEarnedInvitesMobile">۱۲۴K</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary);">درآمد کل</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mobile-card">
+                    <h3 class="card-title-mobile">
+                        <i class="fas fa-share-alt"></i>
+                        اشتراک‌گذاری
+                    </h3>
+                    
+                    <div style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+                        <button class="btn-mobile btn-mobile-secondary" style="flex: 1;" onclick="shareViaWhatsApp()">
+                            <i class="fab fa-whatsapp"></i>
+                            واتساپ
+                        </button>
+                        <button class="btn-mobile btn-mobile-secondary" style="flex: 1;" onclick="shareViaTelegram()">
+                            <i class="fab fa-telegram"></i>
+                            تلگرام
+                        </button>
+                        <button class="btn-mobile btn-mobile-secondary" style="flex: 1;" onclick="shareViaInstagram()">
+                            <i class="fab fa-instagram"></i>
+                            اینستاگرام
+                        </button>
+                    </div>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.05); border-radius: var(--radius-lg); padding: var(--space-md);">
+                        <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: var(--space-sm);">
+                            کد دعوت اختصاصی
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                            <div style="flex: 1; background: rgba(255, 255, 255, 0.1); padding: var(--space-md); border-radius: var(--radius-md); font-family: monospace; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-align: center;" id="referralCodeMobile">
+                                ALI12345
+                            </div>
+                            <button class="btn-mobile btn-mobile-primary" style="width: auto; padding: var(--space-md) var(--space-lg);" onclick="copyReferralCode()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -2219,9 +2494,9 @@
                 <i class="fas fa-wallet bottom-nav-icon"></i>
                 <span class="bottom-nav-label">کیف پول</span>
             </a>
-            <a href="#missions" class="bottom-nav-item" onclick="showSectionMobile('missions')">
-                <i class="fas fa-tasks bottom-nav-icon"></i>
-                <span class="bottom-nav-label">مأموریت‌ها</span>
+            <a href="#invite" class="bottom-nav-item" onclick="showSectionMobile('invite')">
+                <i class="fas fa-user-plus bottom-nav-icon"></i>
+                                <span class="bottom-nav-label">دعوت دوستان</span>
             </a>
             <a href="#rewards" class="bottom-nav-item" onclick="showSectionMobile('rewards')">
                 <i class="fas fa-gift bottom-nav-icon"></i>
@@ -2350,6 +2625,7 @@
                 this.currentUserKey = 'sodmax_current_user';
                 this.transactionsKey = 'sodmax_transactions';
                 this.notificationsKey = 'sodmax_notifications';
+                this.referralsKey = 'sodmax_referrals';
                 
                 this.initializeData();
             }
@@ -2367,6 +2643,7 @@
                             level: 5,
                             totalEarned: 124500,
                             referralCount: 24,
+                            referralEarnings: 124000,
                             joinDate: "۱۴۰۲/۰۵/۱۰",
                             lastLogin: new Date().toLocaleDateString('fa-IR'),
                             sodBalance: 1845200,
@@ -2376,7 +2653,9 @@
                             autoMining: false,
                             todayEarned: 2450,
                             totalMined: 1845200,
-                            completedMissions: 48
+                            completedMissions: 48,
+                            referralCode: "ALI12345",
+                            referralLink: "https://sodmax.city/invite/ali123"
                         }
                     ];
                     localStorage.setItem(this.usersKey, JSON.stringify(defaultUsers));
@@ -2406,6 +2685,17 @@
                             date: "دیروز - ۱۰:۱۵",
                             icon: "fa-arrow-up",
                             color: "var(--accent)"
+                        },
+                        {
+                            id: 3,
+                            userId: 1,
+                            type: "استخراج دستی",
+                            amount: 180,
+                            currency: "SOD",
+                            status: "موفق",
+                            date: "امروز - ۱۲:۴۵",
+                            icon: "fa-hard-hat",
+                            color: "var(--primary)"
                         }
                     ];
                     localStorage.setItem(this.transactionsKey, JSON.stringify(defaultTransactions));
@@ -2441,11 +2731,27 @@
                     ];
                     localStorage.setItem(this.notificationsKey, JSON.stringify(defaultNotifications));
                 }
+                
+                // اگر داده‌های دعوت وجود ندارند، نمونه اولیه ایجاد کن
+                if (!localStorage.getItem(this.referralsKey)) {
+                    const defaultReferrals = [
+                        {
+                            id: 1,
+                            userId: 1,
+                            totalInvites: 24,
+                            activeInvites: 18,
+                            pendingInvites: 3,
+                            totalEarned: 124000,
+                            referralCode: "ALI12345",
+                            referralLink: "https://sodmax.city/invite/ali123"
+                        }
+                    ];
+                    localStorage.setItem(this.referralsKey, JSON.stringify(defaultReferrals));
+                }
             }
             
             hashPassword(password) {
                 // در این نسخه ساده، هش ساده استفاده می‌کنیم
-                // در نسخه واقعی باید از الگوریتم‌های امن مثل bcrypt استفاده کنید
                 return btoa(password);
             }
             
@@ -2453,7 +2759,7 @@
                 return this.hashPassword(password) === hashedPassword;
             }
             
-            register(name, phone, password) {
+            register(name, phone, password, referralCode = null) {
                 const users = this.getUsers();
                 
                 // بررسی تکراری نبودن شماره موبایل
@@ -2471,6 +2777,7 @@
                     level: 1,
                     totalEarned: 0,
                     referralCount: 0,
+                    referralEarnings: 0,
                     joinDate: new Date().toLocaleDateString('fa-IR'),
                     lastLogin: new Date().toLocaleDateString('fa-IR'),
                     sodBalance: 1000, // اعتبار اولیه
@@ -2480,8 +2787,53 @@
                     autoMining: false,
                     todayEarned: 0,
                     totalMined: 0,
-                    completedMissions: 0
+                    completedMissions: 0,
+                    referralCode: this.generateReferralCode(name),
+                    referralLink: `https://sodmax.city/invite/${this.generateReferralCode(name)}`
                 };
+                
+                // اگر کد دعوت وارد شده باشد
+                let referralBonus = 0;
+                if (referralCode) {
+                    // پیدا کردن کاربر معرف
+                    const referrer = users.find(user => user.referralCode === referralCode);
+                    if (referrer) {
+                        // اضافه کردن پاداش به کاربر معرف
+                        referrer.tomanBalance += 1000;
+                        referrer.totalEarned += 1000;
+                        referrer.referralEarnings += 1000;
+                        referrer.referralCount++;
+                        
+                        // به‌روزرسانی کاربر معرف
+                        this.updateUser(referrer);
+                        
+                        // ثبت تراکنش برای کاربر معرف
+                        this.addTransaction(referrer.id, {
+                            type: "پاداش دعوت",
+                            amount: 1000,
+                            currency: "تومان",
+                            status: "موفق",
+                            icon: "fa-user-plus",
+                            color: "var(--secondary)"
+                        });
+                        
+                        // پاداش اضافی برای کاربر جدید
+                        newUser.sodBalance += 500; // 500 SOD اضافی
+                        referralBonus = 500;
+                        
+                        // ایجاد نوتیفیکیشن برای کاربر معرف
+                        const notifications = this.getNotifications();
+                        notifications.push({
+                            id: Date.now() + 1,
+                            userId: referrer.id,
+                            title: "🤝 دعوت موفق",
+                            message: `${name} با کد دعوت شما ثبت‌نام کرد! +۱,۰۰۰ تومان پاداش`,
+                            time: "همین حالا",
+                            read: false
+                        });
+                        localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
+                    }
+                }
                 
                 users.push(newUser);
                 localStorage.setItem(this.usersKey, JSON.stringify(users));
@@ -2489,16 +2841,40 @@
                 // ایجاد نوتیفیکیشن خوش‌آمدگویی
                 const notifications = this.getNotifications();
                 notifications.push({
-                    id: Date.now() + 1,
+                    id: Date.now() + 2,
                     userId: newUser.id,
                     title: "👋 به SODmAX خوش آمدید",
-                    message: "حساب کاربری شما با موفقیت ایجاد شد! ۱۰۰۰ SOD هدیه دریافت کردید.",
+                    message: `حساب کاربری شما با موفقیت ایجاد شد! ۱۰۰۰ SOD هدیه دریافت کردید. ${referralBonus > 0 ? `+ ${referralBonus} SOD پاداش دعوت` : ''}`,
                     time: "همین حالا",
                     read: false
                 });
                 localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
                 
-                return { success: true, user: newUser };
+                // ایجاد داده‌های دعوت
+                const referrals = this.getReferrals();
+                referrals.push({
+                    id: newUser.id,
+                    userId: newUser.id,
+                    totalInvites: 0,
+                    activeInvites: 0,
+                    pendingInvites: 0,
+                    totalEarned: 0,
+                    referralCode: newUser.referralCode,
+                    referralLink: newUser.referralLink
+                });
+                localStorage.setItem(this.referralsKey, JSON.stringify(referrals));
+                
+                return { 
+                    success: true, 
+                    user: newUser,
+                    referralBonus: referralBonus
+                };
+            }
+            
+            generateReferralCode(name) {
+                const namePart = name.replace(/\s/g, '').substring(0, 3).toUpperCase();
+                const randomPart = Math.floor(10000 + Math.random() * 90000);
+                return `${namePart}${randomPart}`;
             }
             
             login(phone, password) {
@@ -2601,6 +2977,86 @@
                 const notifications = this.getNotifications(userId);
                 return notifications.filter(n => !n.read).length;
             }
+            
+            getReferrals(userId) {
+                const referrals = JSON.parse(localStorage.getItem(this.referralsKey)) || [];
+                return referrals.find(r => r.userId === userId);
+            }
+            
+            updateReferrals(userId, updatedReferrals) {
+                const referrals = JSON.parse(localStorage.getItem(this.referralsKey)) || [];
+                const index = referrals.findIndex(r => r.userId === userId);
+                
+                if (index !== -1) {
+                    referrals[index] = updatedReferrals;
+                    localStorage.setItem(this.referralsKey, JSON.stringify(referrals));
+                    return true;
+                }
+                return false;
+            }
+            
+            addReferral(userId) {
+                const referrals = this.getReferrals(userId);
+                if (referrals) {
+                    referrals.totalInvites++;
+                    referrals.pendingInvites++;
+                    this.updateReferrals(userId, referrals);
+                    
+                    // به‌روزرسانی کاربر
+                    const user = this.getUsers().find(u => u.id === userId);
+                    if (user) {
+                        user.referralCount++;
+                        this.updateUser(user);
+                    }
+                    
+                    return referrals;
+                }
+                return null;
+            }
+            
+            confirmReferral(userId) {
+                const referrals = this.getReferrals(userId);
+                if (referrals && referrals.pendingInvites > 0) {
+                    referrals.pendingInvites--;
+                    referrals.activeInvites++;
+                    referrals.totalEarned += 1000; // 1000 تومان پاداش
+                    this.updateReferrals(userId, referrals);
+                    
+                    // به‌روزرسانی کاربر
+                    const user = this.getUsers().find(u => u.id === userId);
+                    if (user) {
+                        user.referralEarnings += 1000;
+                        user.tomanBalance += 1000;
+                        user.totalEarned += 1000;
+                        this.updateUser(user);
+                        
+                        // ثبت تراکنش
+                        this.addTransaction(userId, {
+                            type: "پاداش دعوت",
+                            amount: 1000,
+                            currency: "تومان",
+                            status: "موفق",
+                            icon: "fa-user-plus",
+                            color: "var(--secondary)"
+                        });
+                        
+                        // ارسال نوتیفیکیشن
+                        const notifications = this.getNotifications();
+                        notifications.push({
+                            id: Date.now(),
+                            userId: userId,
+                            title: "🤝 دعوت موفق",
+                            message: "دوست شما ثبت‌نام و تأیید شد! +۱,۰۰۰ تومان پاداش",
+                            time: "همین حالا",
+                            read: false
+                        });
+                        localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
+                    }
+                    
+                    return referrals;
+                }
+                return null;
+            }
         }
 
         // ==================== سیستم اصلی اپلیکیشن ====================
@@ -2608,6 +3064,9 @@
             constructor() {
                 this.userManager = new UserManager();
                 this.currentUser = null;
+                this.autoMiningInterval = null;
+                this.boostEndTime = null;
+                this.boostInterval = null;
                 
                 this.gameData = {
                     missions: {
@@ -2619,15 +3078,21 @@
                 };
             }
             
-            // استخراج
+            // استخراج دستی
             mine(user) {
-                const earned = user.miningPower * user.miningMultiplier;
+                if (!user) return 0;
                 
-                user.sodBalance += earned;
-                user.todayEarned += Math.floor(earned / 100);
-                user.totalMined += earned;
+                // محاسبه مقدار SOD استخراج شده
+                const baseEarn = user.miningPower || 5;
+                const multiplier = user.miningMultiplier || 1;
+                const earned = baseEarn * multiplier;
                 
-                // افزایش پیشرفت مأموریت
+                // افزایش موجودی کاربر
+                user.sodBalance = (user.sodBalance || 0) + earned;
+                user.todayEarned = (user.todayEarned || 0) + earned;
+                user.totalMined = (user.totalMined || 0) + earned;
+                
+                // افزایش پیشرفت مأموریت کلیک
                 if (this.gameData.missions.active[0]) {
                     this.gameData.missions.active[0].progress++;
                 }
@@ -2649,6 +3114,161 @@
                 return earned;
             }
             
+            // استخراج اتوماتیک
+            autoMine(user) {
+                if (!user || !user.autoMining) return 0;
+                
+                const earned = this.mine(user);
+                return earned;
+            }
+            
+            // فعال/غیرفعال کردن استخراج اتوماتیک
+            toggleAutoMining(user) {
+                if (!user) return false;
+                
+                user.autoMining = !user.autoMining;
+                this.userManager.updateUser(user);
+                this.currentUser = user;
+                
+                if (user.autoMining) {
+                    this.startAutoMining();
+                } else {
+                    this.stopAutoMining();
+                }
+                
+                return user.autoMining;
+            }
+            
+            // شروع استخراج اتوماتیک
+            startAutoMining() {
+                if (this.autoMiningInterval) {
+                    clearInterval(this.autoMiningInterval);
+                }
+                
+                this.autoMiningInterval = setInterval(() => {
+                    if (this.currentUser && this.currentUser.autoMining) {
+                        const earned = this.autoMine(this.currentUser);
+                        if (earned > 0) {
+                            // نمایش افکت هر 5 ثانیه
+                            this.createMiningEffect(earned);
+                            updateMobileUI();
+                        }
+                    } else {
+                        this.stopAutoMining();
+                    }
+                }, 5000); // هر 5 ثانیه
+            }
+            
+            // توقف استخراج اتوماتیک
+            stopAutoMining() {
+                if (this.autoMiningInterval) {
+                    clearInterval(this.autoMiningInterval);
+                    this.autoMiningInterval = null;
+                }
+            }
+            
+            // افزایش قدرت استخراج (بوست)
+            boostMining(user) {
+                if (!user) return false;
+                
+                const cost = 5000;
+                if (user.sodBalance < cost) {
+                    return false;
+                }
+                
+                user.sodBalance -= cost;
+                user.miningMultiplier = 3;
+                this.boostEndTime = Date.now() + 30000; // 30 ثانیه
+                
+                // ثبت تراکنش
+                this.userManager.addTransaction(user.id, {
+                    type: "خرید بوست",
+                    amount: -cost,
+                    currency: "SOD",
+                    status: "موفق",
+                    icon: "fa-bolt",
+                    color: "var(--accent)"
+                });
+                
+                // به‌روزرسانی کاربر
+                this.userManager.updateUser(user);
+                this.currentUser = user;
+                
+                // شروع تایمر برای بازگشت به حالت عادی
+                this.startBoostTimer();
+                
+                return true;
+            }
+            
+            // شروع تایمر بوست
+            startBoostTimer() {
+                if (this.boostInterval) {
+                    clearInterval(this.boostInterval);
+                }
+                
+                this.boostInterval = setInterval(() => {
+                    if (this.boostEndTime && Date.now() >= this.boostEndTime) {
+                        if (this.currentUser) {
+                            this.currentUser.miningMultiplier = 1;
+                            this.userManager.updateUser(this.currentUser);
+                            updateMobileUI();
+                        }
+                        this.clearBoostTimer();
+                    }
+                }, 1000);
+            }
+            
+            // پاک کردن تایمر بوست
+            clearBoostTimer() {
+                if (this.boostInterval) {
+                    clearInterval(this.boostInterval);
+                    this.boostInterval = null;
+                    this.boostEndTime = null;
+                }
+            }
+            
+            // ارتقاء ماینر
+            upgradeMiner(user) {
+                if (!user) return false;
+                
+                const cost = 50000;
+                if (user.sodBalance < cost) {
+                    return false;
+                }
+                
+                user.sodBalance -= cost;
+                user.miningPower = (user.miningPower || 5) + 5;
+                user.level = (user.level || 1) + 1;
+                
+                // ثبت تراکنش
+                this.userManager.addTransaction(user.id, {
+                    type: "ارتقاء ماینر",
+                    amount: -cost,
+                    currency: "SOD",
+                    status: "موفق",
+                    icon: "fa-arrow-up",
+                    color: "var(--accent)"
+                });
+                
+                // به‌روزرسانی کاربر
+                this.userManager.updateUser(user);
+                this.currentUser = user;
+                
+                // ارسال نوتیفیکیشن
+                const notifications = JSON.parse(localStorage.getItem(this.userManager.notificationsKey)) || [];
+                notifications.push({
+                    id: Date.now(),
+                    userId: user.id,
+                    title: "🎉 ارتقاء موفق",
+                    message: `ماینر شما به سطح ${user.level} ارتقا یافت! قدرت +۵ افزایش یافت.`,
+                    time: "همین حالا",
+                    read: false
+                });
+                localStorage.setItem(this.userManager.notificationsKey, JSON.stringify(notifications));
+                
+                return true;
+            }
+            
             // تکمیل مأموریت
             completeMission(user, missionId) {
                 const mission = this.gameData.missions.active.find(m => m.id === missionId);
@@ -2656,7 +3276,7 @@
                 
                 user.tomanBalance += mission.reward;
                 user.totalEarned += mission.reward;
-                user.completedMissions++;
+                user.completedMissions = (user.completedMissions || 0) + 1;
                 
                 // ثبت تراکنش
                 this.userManager.addTransaction(user.id, {
@@ -2704,82 +3324,10 @@
                 });
             }
             
-            // افزایش قدرت
-            boostMining(user) {
-                if (user.sodBalance < 5000) {
-                    return false;
-                }
-                
-                user.sodBalance -= 5000;
-                user.miningMultiplier = 3;
-                
-                // ثبت تراکنش
-                this.userManager.addTransaction(user.id, {
-                    type: "خرید بوست",
-                    amount: -5000,
-                    currency: "SOD",
-                    status: "موفق",
-                    icon: "fa-bolt",
-                    color: "var(--accent)"
-                });
-                
-                // به‌روزرسانی کاربر
-                this.userManager.updateUser(user);
-                this.currentUser = user;
-                
-                // بازگشت به حالت عادی بعد از 30 ثانیه
-                setTimeout(() => {
-                    user.miningMultiplier = 1;
-                    this.userManager.updateUser(user);
-                    this.currentUser = user;
-                    updateMobileUI();
-                }, 30000);
-                
-                return true;
-            }
-            
-            // ارتقاء ماینر
-            upgradeMiner(user) {
-                const cost = 50000;
-                if (user.sodBalance < cost) {
-                    return false;
-                }
-                
-                user.sodBalance -= cost;
-                user.miningPower += 5;
-                user.level++;
-                
-                // ثبت تراکنش
-                this.userManager.addTransaction(user.id, {
-                    type: "ارتقاء ماینر",
-                    amount: -cost,
-                    currency: "SOD",
-                    status: "موفق",
-                    icon: "fa-arrow-up",
-                    color: "var(--accent)"
-                });
-                
-                // به‌روزرسانی کاربر
-                this.userManager.updateUser(user);
-                this.currentUser = user;
-                
-                // ارسال نوتیفیکیشن
-                const notifications = JSON.parse(localStorage.getItem(this.userManager.notificationsKey)) || [];
-                notifications.push({
-                    id: Date.now(),
-                    userId: user.id,
-                    title: "🎉 ارتقاء موفق",
-                    message: `ماینر شما به سطح ${user.level} ارتقا یافت! قدرت +۵ افزایش یافت.`,
-                    time: "همین حالا",
-                    read: false
-                });
-                localStorage.setItem(this.userManager.notificationsKey, JSON.stringify(notifications));
-                
-                return true;
-            }
-            
             // برداشت تومان
             withdrawToman(user) {
+                if (!user) return false;
+                
                 if (user.tomanBalance < 10000) {
                     return false;
                 }
@@ -2804,11 +3352,30 @@
                 return amount;
             }
             
+            // دعوت دوست
+            inviteFriend(user) {
+                if (!user) return false;
+                
+                // اضافه کردن دعوت جدید
+                const referrals = this.userManager.addReferral(user.id);
+                
+                if (referrals) {
+                    return true;
+                }
+                return false;
+            }
+            
+            // تأیید دعوت
+            confirmReferral(userId) {
+                return this.userManager.confirmReferral(userId);
+            }
+            
             // فرمت اعداد
             formatNumber(num) {
+                if (!num) return "0";
                 if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
                 if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-                return num.toLocaleString('fa-IR');
+                return num.toString();
             }
             
             // محاسبه هزینه ارتقای سطح بعدی
@@ -2819,6 +3386,66 @@
             // دریافت آواتار بر اساس نام
             getAvatarFromName(name) {
                 return name ? name.charAt(0) : "ع";
+            }
+            
+            // ایجاد افکت ماینینگ
+            createMiningEffect(amount) {
+                const minerElement = document.querySelector('.miner-3d-mobile');
+                if (!minerElement) return;
+                
+                const rect = minerElement.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const effect = document.createElement('div');
+                effect.className = 'mining-effect';
+                effect.innerHTML = `<span>+${amount} SOD</span>`;
+                
+                effect.style.position = 'fixed';
+                effect.style.left = `${centerX}px`;
+                effect.style.top = `${centerY}px`;
+                effect.style.zIndex = '10000';
+                
+                document.body.appendChild(effect);
+                
+                // حذف بعد از انیمیشن
+                setTimeout(() => {
+                    if (effect.parentNode) {
+                        effect.parentNode.removeChild(effect);
+                    }
+                }, 1100);
+            }
+            
+            // پخش صدای استخراج
+            playMiningSound() {
+                // ایجاد صدای ساده برای استخراج
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                    
+                } catch (e) {
+                    console.log('پخش صدا پشتیبانی نمی‌شود');
+                }
+            }
+            
+            // ویبره
+            vibrate(pattern) {
+                if (navigator.vibrate) {
+                    navigator.vibrate(pattern);
+                }
             }
         }
 
@@ -2835,14 +3462,20 @@
                 mobileClient.currentUser = currentUser;
                 showApp();
                 updateMobileUI();
-                updateCurrentTime();
-                vibrateTest();
+                
+                // اگر استخراج اتوماتیک فعال است، شروع کن
+                if (currentUser.autoMining) {
+                    mobileClient.startAutoMining();
+                }
                 
                 console.log('📱 SODmAX CityVerse Mobile راه‌اندازی شد!');
             } else {
                 // کاربر وارد نشده است
                 showAuth();
             }
+            
+            // تست ویبره
+            vibrateTest();
         }
 
         // نمایش اپلیکیشن
@@ -2886,42 +3519,61 @@
             document.getElementById('quickReferralCount').textContent = user.referralCount;
             
             // استخراج
-            document.getElementById('clickRewardMobile').textContent = `+${user.miningPower * user.miningMultiplier} SOD`;
-            document.getElementById('miningPowerMobile').textContent = `${user.miningPower * user.miningMultiplier}x`;
-            document.getElementById('miningTodayMobile').textContent = mobileClient.formatNumber(user.todayEarned);
-            document.getElementById('miningTotalMobile').textContent = mobileClient.formatNumber(user.totalMined);
-            document.getElementById('miningTodayText').textContent = `+${user.todayEarned.toLocaleString('fa-IR')} SOD`;
+            const earned = (user.miningPower || 5) * (user.miningMultiplier || 1);
+            document.getElementById('clickRewardMobile').textContent = `+${earned} SOD`;
+            document.getElementById('miningPowerMobile').textContent = `${earned}x`;
+            document.getElementById('miningTodayMobile').textContent = mobileClient.formatNumber(user.todayEarned || 0);
+            document.getElementById('miningTotalMobile').textContent = mobileClient.formatNumber(user.totalMined || 0);
+            document.getElementById('miningTodayText').textContent = `+${(user.todayEarned || 0).toLocaleString('fa-IR')} SOD`;
             
             // ارتقاء ماینر
             document.getElementById('minerLevel').textContent = user.level;
             const nextLevelCost = mobileClient.getNextLevelCost(user.level);
             document.getElementById('nextLevelCost').textContent = nextLevelCost.toLocaleString('fa-IR');
-            document.getElementById('currentPower').textContent = `${user.miningPower}x`;
-            document.getElementById('nextPower').textContent = `${user.miningPower + 5}x`;
+            document.getElementById('currentPower').textContent = `${user.miningPower || 5}x`;
+            document.getElementById('nextPower').textContent = `${(user.miningPower || 5) + 5}x`;
             document.getElementById('upgradeCost').textContent = `${nextLevelCost.toLocaleString('fa-IR')} SOD`;
             document.getElementById('upgradeCostBtn').textContent = mobileClient.formatNumber(nextLevelCost);
             
             // کیف پول
-            document.getElementById('walletSodBalance').textContent = user.sodBalance.toLocaleString('fa-IR');
-            document.getElementById('walletTomanBalance').textContent = user.tomanBalance.toLocaleString('fa-IR');
-            document.getElementById('modalSodBalance').textContent = `${user.sodBalance.toLocaleString('fa-IR')} SOD`;
-            document.getElementById('modalTomanBalance').textContent = `${user.tomanBalance.toLocaleString('fa-IR')} تومان`;
+            document.getElementById('walletSodBalance').textContent = (user.sodBalance || 0).toLocaleString('fa-IR');
+            document.getElementById('walletTomanBalance').textContent = (user.tomanBalance || 0).toLocaleString('fa-IR');
+            document.getElementById('modalSodBalance').textContent = `${(user.sodBalance || 0).toLocaleString('fa-IR')} SOD`;
+            document.getElementById('modalTomanBalance').textContent = `${(user.tomanBalance || 0).toLocaleString('fa-IR')} تومان`;
             
             // منو
             document.getElementById('menuSodBalance').textContent = mobileClient.formatNumber(user.sodBalance);
             document.getElementById('menuTomanBalance').textContent = mobileClient.formatNumber(user.tomanBalance);
             document.getElementById('menuTotalEarned').textContent = mobileClient.formatNumber(user.totalEarned);
+            document.getElementById('inviteBadge').textContent = user.referralCount;
+            
+            // دعوت دوستان
+            document.getElementById('referralCountMobile').textContent = `${user.referralCount} دوست دعوت کرده‌اید`;
+            document.getElementById('totalReferralEarningsMobile').textContent = mobileClient.formatNumber(user.referralEarnings);
+            document.getElementById('referralLinkMobile').textContent = user.referralLink;
+            document.getElementById('referralCodeMobile').textContent = user.referralCode;
+            
+            // آمار دعوت
+            const referrals = mobileClient.userManager.getReferrals(user.id);
+            if (referrals) {
+                document.getElementById('totalInvitesMobile').textContent = referrals.totalInvites;
+                document.getElementById('activeInvitesMobile').textContent = referrals.activeInvites;
+                document.getElementById('pendingInvitesMobile').textContent = referrals.pendingInvites;
+                document.getElementById('totalEarnedInvitesMobile').textContent = mobileClient.formatNumber(referrals.totalEarned);
+            }
             
             // مأموریت‌ها
             const mission1 = mobileClient.gameData.missions.active[0];
             if (mission1) {
-                document.getElementById('mission1Progress').style.width = `${(mission1.progress / mission1.max) * 100}%`;
+                const progressPercent = (mission1.progress / mission1.max) * 100;
+                document.getElementById('mission1Progress').style.width = `${progressPercent}%`;
                 document.getElementById('mission1Text').textContent = `${mission1.progress}/${mission1.max}`;
             }
             
             const mission2 = mobileClient.gameData.missions.active[1];
             if (mission2) {
-                document.getElementById('mission2Progress').style.width = `${(mission2.progress / mission2.max) * 100}%`;
+                const progressPercent = (mission2.progress / mission2.max) * 100;
+                document.getElementById('mission2Progress').style.width = `${progressPercent}%`;
                 document.getElementById('mission2Text').textContent = `${mission2.progress}/${mission2.max}`;
             }
             
@@ -2934,7 +3586,7 @@
             document.getElementById('profileLastLogin').textContent = user.lastLogin;
             document.getElementById('profileReferrals').textContent = user.referralCount;
             document.getElementById('profileTotalEarned').textContent = mobileClient.formatNumber(user.totalEarned);
-            document.getElementById('completedMissions').textContent = user.completedMissions;
+            document.getElementById('completedMissions').textContent = user.completedMissions || 0;
             
             // مودال کاربر
             document.getElementById('modalUserAvatar').textContent = mobileClient.getAvatarFromName(user.name);
@@ -2943,7 +3595,7 @@
             document.getElementById('modalUserLevel').textContent = user.level;
             document.getElementById('modalUserTotalEarned').textContent = mobileClient.formatNumber(user.totalEarned);
             document.getElementById('modalUserReferrals').textContent = user.referralCount;
-            document.getElementById('modalUserMissions').textContent = user.completedMissions;
+            document.getElementById('modalUserMissions').textContent = user.completedMissions || 0;
             
             // تراکنش‌ها
             updateTransactionHistory();
@@ -2965,45 +3617,52 @@
             const container = document.getElementById('transactionHistory');
             container.innerHTML = '';
             
-            transactions.slice(0, 5).forEach(transaction => {
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: var(--space-xl); color: var(--text-tertiary);">
+                        <i class="fas fa-history" style="font-size: 32px; margin-bottom: var(--space-md); display: block; opacity: 0.5;"></i>
+                        <div style="font-size: 14px; margin-bottom: var(--space-xs);">هیچ تراکنشی ثبت نشده است</div>
+                        <div style="font-size: 12px; opacity: 0.7;">پس از انجام تراکنش، تاریخچه اینجا نمایش داده می‌شود</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            transactions.slice(0, 10).forEach(transaction => {
                 const isNegative = transaction.amount < 0;
                 const amountText = isNegative ? 
                     `-${Math.abs(transaction.amount).toLocaleString('fa-IR')}` : 
                     `+${transaction.amount.toLocaleString('fa-IR')}`;
+                
                 const amountColor = isNegative ? 'var(--accent)' : 
                     (transaction.currency === 'SOD' ? 'var(--primary)' : 'var(--secondary)');
                 
+                const iconClass = transaction.icon || 'fa-exchange-alt';
+                
                 const transactionEl = document.createElement('div');
-                transactionEl.style.cssText = `
-                    display: flex; 
-                    justify-content: space-between; 
-                    align-items: center; 
-                    padding: var(--space-sm) 0; 
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                `;
+                transactionEl.className = 'transaction-item';
+                transactionEl.onclick = () => {
+                    showToastMobile(transaction.type, 
+                        `مبلغ: ${amountText} ${transaction.currency}<br>تاریخ: ${transaction.date}<br>وضعیت: ${transaction.status}`, 
+                        'info'
+                    );
+                };
+                
                 transactionEl.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                        <div style="width: 32px; height: 32px; background: ${transaction.color.replace('var(--', 'rgba(').replace(')', ', 0.2)')}; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: ${transaction.color}; font-size: 12px;">
-                            <i class="fas ${transaction.icon}"></i>
-                        </div>
-                        <div>
-                            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">${transaction.type}</div>
-                            <div style="font-size: 11px; color: var(--text-tertiary);">${transaction.date}</div>
-                        </div>
+                    <div class="transaction-icon" style="background: ${transaction.color}; color: white;">
+                        <i class="fas ${iconClass}"></i>
                     </div>
-                    <div style="font-size: 14px; font-weight: 900; color: ${amountColor};">${amountText} ${transaction.currency}</div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">${transaction.type}</div>
+                        <div class="transaction-date">${transaction.date}</div>
+                    </div>
+                    <div class="transaction-amount" style="color: ${amountColor}">
+                        ${amountText}<br>
+                        <small style="font-size: 10px; font-weight: normal; opacity: 0.8;">${transaction.currency}</small>
+                    </div>
                 `;
                 container.appendChild(transactionEl);
             });
-            
-            if (transactions.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: var(--space-lg); color: var(--text-tertiary); font-size: 12px;">
-                        <i class="fas fa-history" style="font-size: 24px; margin-bottom: var(--space-sm); display: block;"></i>
-                        هیچ تراکنشی ثبت نشده است
-                    </div>
-                `;
-            }
         }
 
         // به‌روزرسانی نوتیفیکیشن‌ها
@@ -3014,6 +3673,16 @@
             const notifications = mobileClient.userManager.getNotifications(user.id);
             const container = document.getElementById('notificationsList');
             container.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: var(--space-xl); color: var(--text-tertiary); font-size: 12px;">
+                        <i class="fas fa-bell-slash" style="font-size: 24px; margin-bottom: var(--space-sm); display: block;"></i>
+                        هیچ نوتیفیکیشنی وجود ندارد
+                    </div>
+                `;
+                return;
+            }
             
             notifications.forEach(notification => {
                 const notificationEl = document.createElement('div');
@@ -3041,15 +3710,6 @@
                 `;
                 container.appendChild(notificationEl);
             });
-            
-            if (notifications.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: var(--space-lg); color: var(--text-tertiary); font-size: 12px;">
-                        <i class="fas fa-bell-slash" style="font-size: 24px; margin-bottom: var(--space-sm); display: block;"></i>
-                        هیچ نوتیفیکیشنی وجود ندارد
-                    </div>
-                `;
-            }
         }
 
         // نمایش توست
@@ -3154,6 +3814,7 @@
             const phone = document.getElementById('registerPhone').value.trim();
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const referralCode = document.getElementById('registerReferralCode').value.trim() || null;
             
             let hasError = false;
             
@@ -3199,10 +3860,14 @@
             
             // ثبت‌نام کاربر
             setTimeout(() => {
-                const result = mobileClient.userManager.register(name, phone, password);
+                const result = mobileClient.userManager.register(name, phone, password, referralCode);
                 
                 if (result.success) {
-                    showToastMobile('✅ ثبت‌نام موفق', 'حساب کاربری شما با موفقیت ایجاد شد!', 'success');
+                    const message = referralCode ? 
+                        `حساب کاربری شما با موفقیت ایجاد شد! ${result.referralBonus} SOD پاداش دعوت دریافت کردید.` :
+                        'حساب کاربری شما با موفقیت ایجاد شد!';
+                    
+                    showToastMobile('✅ ثبت‌نام موفق', message, 'success');
                     
                     // ورود خودکار
                     mobileClient.currentUser = result.user;
@@ -3332,32 +3997,47 @@
 
         // ==================== عملکردهای اصلی اپلیکیشن ====================
         function manualMineMobile() {
-            if (!mobileClient.currentUser) return;
-            
-            const earned = mobileClient.mine(mobileClient.currentUser);
-            updateMobileUI();
-            showToastMobile('⚡ استخراج موفق', `+${earned} SOD دریافت کردید!`, 'success');
-            
-            // افکت ویبره
-            if (navigator.vibrate && document.getElementById('vibrationToggle').checked) {
-                navigator.vibrate(50);
+            if (!mobileClient.currentUser) {
+                showToastMobile('⚠️ خطا', 'لطفاً ابتدا وارد شوید', 'error');
+                return;
             }
             
-            // افکت بصری
-            createMiningEffectMobile(earned);
+            const earned = mobileClient.mine(mobileClient.currentUser);
+            
+            // پخش صدا
+            const soundToggle = document.getElementById('soundToggle');
+            if (soundToggle && soundToggle.checked) {
+                mobileClient.playMiningSound();
+            }
+            
+            // ویبره
+            const vibrationToggle = document.getElementById('vibrationToggle');
+            if (vibrationToggle && vibrationToggle.checked && navigator.vibrate) {
+                mobileClient.vibrate([50, 30, 50]);
+            }
+            
+            // نمایش افکت
+            mobileClient.createMiningEffect(earned);
+            
+            // بروزرسانی UI
+            updateMobileUI();
+            
+            // نمایش توست
+            showToastMobile('⚡ استخراج موفق', `+${earned} SOD دریافت کردید!`, 'success');
         }
 
         function toggleAutoMiningMobile() {
             if (!mobileClient.currentUser) return;
             
-            mobileClient.currentUser.autoMining = !mobileClient.currentUser.autoMining;
-            mobileClient.userManager.updateUser(mobileClient.currentUser);
+            const isAutoMining = mobileClient.toggleAutoMining(mobileClient.currentUser);
             
             showToastMobile(
-                mobileClient.currentUser.autoMining ? '🤖 استخراج خودکار' : '⏹️ استخراج دستی',
-                mobileClient.currentUser.autoMining ? 'استخراج خودکار فعال شد!' : 'استخراج خودکار متوقف شد',
+                isAutoMining ? '🤖 استخراج خودکار' : '⏹️ استخراج دستی',
+                isAutoMining ? 'استخراج خودکار فعال شد!' : 'استخراج خودکار متوقف شد',
                 'info'
             );
+            
+            updateMobileUI();
         }
 
         function boostMiningMobile() {
@@ -3395,6 +4075,7 @@
         function claimRewardMobile(type) {
             if (!mobileClient.currentUser) return;
             
+            const user = mobileClient.currentUser;
             const rewards = {
                 sod: { amount: 10000, message: '۱۰,۰۰۰ SOD دریافت کردید!' },
                 toman: { amount: 5000, message: '۵,۰۰۰ تومان دریافت کردید!' },
@@ -3405,8 +4086,8 @@
             const reward = rewards[type];
             if (reward) {
                 if (type === 'sod') {
-                    mobileClient.currentUser.sodBalance += reward.amount;
-                    mobileClient.userManager.addTransaction(mobileClient.currentUser.id, {
+                    user.sodBalance += reward.amount;
+                    mobileClient.userManager.addTransaction(user.id, {
                         type: "پاداش SOD",
                         amount: reward.amount,
                         currency: "SOD",
@@ -3416,8 +4097,8 @@
                     });
                 }
                 if (type === 'toman') {
-                    mobileClient.currentUser.tomanBalance += reward.amount;
-                    mobileClient.userManager.addTransaction(mobileClient.currentUser.id, {
+                    user.tomanBalance += reward.amount;
+                    mobileClient.userManager.addTransaction(user.id, {
                         type: "پاداش تومان",
                         amount: reward.amount,
                         currency: "تومان",
@@ -3427,10 +4108,12 @@
                     });
                 }
                 if (type === 'boost') {
-                    mobileClient.currentUser.miningMultiplier = Math.max(mobileClient.currentUser.miningMultiplier, 3);
+                    user.miningMultiplier = Math.max(user.miningMultiplier, 3);
+                    mobileClient.boostEndTime = Date.now() + 30000;
+                    mobileClient.startBoostTimer();
                 }
                 
-                mobileClient.userManager.updateUser(mobileClient.currentUser);
+                mobileClient.userManager.updateUser(user);
                 updateMobileUI();
                 showToastMobile('🎁 پاداش دریافت شد', reward.message, 'success');
             }
@@ -3439,11 +4122,12 @@
         function claimAllRewardsMobile() {
             if (!mobileClient.currentUser) return;
             
-            mobileClient.currentUser.sodBalance += 10000;
-            mobileClient.currentUser.tomanBalance += 5000;
-            mobileClient.currentUser.miningMultiplier = Math.max(mobileClient.currentUser.miningMultiplier, 3);
+            const user = mobileClient.currentUser;
+            user.sodBalance += 10000;
+            user.tomanBalance += 5000;
+            user.miningMultiplier = Math.max(user.miningMultiplier, 3);
             
-            mobileClient.userManager.addTransaction(mobileClient.currentUser.id, {
+            mobileClient.userManager.addTransaction(user.id, {
                 type: "دریافت همه پاداش‌ها",
                 amount: 10000,
                 currency: "SOD",
@@ -3452,7 +4136,7 @@
                 color: "var(--primary)"
             });
             
-            mobileClient.userManager.addTransaction(mobileClient.currentUser.id, {
+            mobileClient.userManager.addTransaction(user.id, {
                 type: "دریافت همه پاداش‌ها",
                 amount: 5000,
                 currency: "تومان",
@@ -3461,7 +4145,10 @@
                 color: "var(--secondary)"
             });
             
-            mobileClient.userManager.updateUser(mobileClient.currentUser);
+            mobileClient.boostEndTime = Date.now() + 30000;
+            mobileClient.startBoostTimer();
+            
+            mobileClient.userManager.updateUser(user);
             updateMobileUI();
             showToastMobile('🎁 همه پاداش‌ها', 'تمام پاداش‌ها دریافت شدند!', 'success');
         }
@@ -3469,11 +4156,12 @@
         function claimDailyReward() {
             if (!mobileClient.currentUser) return;
             
+            const user = mobileClient.currentUser;
             const reward = 1000;
-            mobileClient.currentUser.tomanBalance += reward;
-            mobileClient.currentUser.totalEarned += reward;
+            user.tomanBalance += reward;
+            user.totalEarned += reward;
             
-            mobileClient.userManager.addTransaction(mobileClient.currentUser.id, {
+            mobileClient.userManager.addTransaction(user.id, {
                 type: "پاداش روزانه",
                 amount: reward,
                 currency: "تومان",
@@ -3482,7 +4170,7 @@
                 color: "var(--secondary)"
             });
             
-            mobileClient.userManager.updateUser(mobileClient.currentUser);
+            mobileClient.userManager.updateUser(user);
             updateMobileUI();
             showToastMobile('📅 پاداش روزانه', `+${reward.toLocaleString('fa-IR')} تومان دریافت کردید!`, 'success');
         }
@@ -3545,12 +4233,117 @@
                 showToastMobile('👋 خروج از حساب', 'در حال خروج...', 'info');
                 
                 setTimeout(() => {
+                    // توقف استخراج اتوماتیک
+                    mobileClient.stopAutoMining();
+                    mobileClient.clearBoostTimer();
+                    
+                    // خروج از حساب
                     mobileClient.userManager.logout();
                     mobileClient.currentUser = null;
                     
+                    // نمایش فرم احراز هویت
                     showAuth();
                     showToastMobile('✅ خارج شدید', 'با موفقیت از حساب کاربری خارج شدید', 'success');
                 }, 1500);
+            }
+        }
+
+        // ==================== عملکردهای دعوت دوستان ====================
+        function copyReferralLink() {
+            const user = mobileClient.currentUser;
+            if (!user) return;
+            
+            const link = user.referralLink;
+            
+            // استفاده از Clipboard API در صورت موجود بودن
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(() => {
+                    showToastMobile('📋 کپی شد', 'لینک دعوت با موفقیت کپی شد!', 'success');
+                }).catch(err => {
+                    fallbackCopyToClipboard(link);
+                });
+            } else {
+                fallbackCopyToClipboard(link);
+            }
+        }
+
+        function copyReferralCode() {
+            const user = mobileClient.currentUser;
+            if (!user) return;
+            
+            const code = user.referralCode;
+            
+            // استفاده از Clipboard API در صورت موجود بودن
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(code).then(() => {
+                    showToastMobile('📋 کپی شد', 'کد دعوت با موفقیت کپی شد!', 'success');
+                }).catch(err => {
+                    fallbackCopyToClipboard(code);
+                });
+            } else {
+                fallbackCopyToClipboard(code);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToastMobile('📋 کپی شد', 'محتوا با موفقیت کپی شد!', 'success');
+            } catch (err) {
+                showToastMobile('⚠️ خطا', 'کپی کردن با مشکل مواجه شد', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function shareViaWhatsApp() {
+            const user = mobileClient.currentUser;
+            if (!user) return;
+            
+            const message = `به SODmAX CityVerse بپیوندید! 🌟\n\nبا استفاده از لینک زیر ثبت‌نام کنید و ۱۰۰۰ SOD هدیه دریافت کنید:\n${user.referralLink}\n\nکد دعوت: ${user.referralCode}`;
+            const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            
+            window.open(url, '_blank');
+            showToastMobile('📱 اشتراک‌گذاری', 'در حال بازکردن واتساپ...', 'info');
+        }
+
+        function shareViaTelegram() {
+            const user = mobileClient.currentUser;
+            if (!user) return;
+            
+            const message = `به SODmAX CityVerse بپیوندید! 🌟\n\nبا استفاده از لینک زیر ثبت‌نام کنید و ۱۰۰۰ SOD هدیه دریافت کنید:\n${user.referralLink}\n\nکد دعوت: ${user.referralCode}`;
+            const url = `https://t.me/share/url?url=${encodeURIComponent(user.referralLink)}&text=${encodeURIComponent(message)}`;
+            
+            window.open(url, '_blank');
+            showToastMobile('📱 اشتراک‌گذاری', 'در حال بازکردن تلگرام...', 'info');
+        }
+
+        function shareViaInstagram() {
+            showToastMobile('📱 اینستاگرام', 'اشتراک‌گذاری در اینستاگرام به زودی فعال خواهد شد!', 'info');
+        }
+
+        function inviteFriendMobile() {
+            if (!mobileClient.currentUser) return;
+            
+            if (mobileClient.inviteFriend(mobileClient.currentUser)) {
+                updateMobileUI();
+                showToastMobile('🤝 دعوت ارسال شد', 'دعوت شما ثبت شد. بعد از تأیید دوستتان، ۱,۰۰۰ تومان پاداش دریافت خواهید کرد!', 'info');
+                
+                // شبیه‌سازی تأیید دعوت بعد از 3 ثانیه
+                setTimeout(() => {
+                    mobileClient.confirmReferral(mobileClient.currentUser.id);
+                    updateMobileUI();
+                    showToastMobile('🤝 دعوت تأیید شد', 'دوست شما ثبت‌نام و تأیید شد! +۱,۰۰۰ تومان پاداش دریافت کردید.', 'success');
+                }, 3000);
             }
         }
 
@@ -3580,64 +4373,12 @@
             }
         }
 
-        function updateCurrentTime() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('fa-IR', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-            
-            // در صورت نیاز می‌توانید زمان را در جایی نمایش دهید
-            // document.getElementById('currentTime').textContent = time;
-        }
-
         function vibrateTest() {
             // تست ویبره در صورت پشتیبانی
-            if (navigator.vibrate && document.getElementById('vibrationToggle').checked) {
+            if (navigator.vibrate) {
                 // ویبره کوتاه برای تأیید لود
-                navigator.vibrate([100]);
+                navigator.vibrate(100);
             }
-        }
-
-        function createMiningEffectMobile(amount) {
-            const effect = document.createElement('div');
-            effect.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: var(--primary-light);
-                font-weight: 900;
-                font-size: 24px;
-                pointer-events: none;
-                z-index: 1000;
-                text-shadow: 0 0 20px var(--primary);
-                animation: miningEffectMobile 1s ease-out forwards;
-            `;
-            
-            effect.textContent = `+${amount}`;
-            document.body.appendChild(effect);
-            
-            setTimeout(() => effect.remove(), 1000);
-        }
-
-        // اضافه کردن استایل انیمیشن
-        if (!document.querySelector('#miningEffectMobileStyle')) {
-            const style = document.createElement('style');
-            style.id = 'miningEffectMobileStyle';
-            style.textContent = `
-                @keyframes miningEffectMobile {
-                    0% { 
-                        opacity: 1; 
-                        transform: translate(-50%, -50%) scale(1); 
-                    }
-                    100% { 
-                        opacity: 0; 
-                        transform: translate(-50%, -100px) scale(1.5); 
-                    }
-                }
-            `;
-            document.head.appendChild(style);
         }
 
         // ==================== رویدادها ====================
@@ -3686,6 +4427,36 @@
         document.getElementById('vibrationToggle').addEventListener('change', function(e) {
             showToastMobile('📳 ویبره', this.checked ? 'فعال شد' : 'غیرفعال شد', 'info');
         });
+
+        // توقف استخراج هنگام بستن صفحه
+        window.addEventListener('beforeunload', function() {
+            mobileClient.stopAutoMining();
+            mobileClient.clearBoostTimer();
+        });
+
+        // ثبت‌نام تست سریع (برای آزمایش)
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     // برای تست سریع، می‌توانید این خط را فعال کنید
+        //     // testQuickLogin();
+        // });
+
+        function testQuickLogin() {
+            // تست سریع با کاربر پیش‌فرض
+            const testUser = {
+                phone: "09123456789",
+                password: "123456"
+            };
+            
+            setTimeout(() => {
+                const result = mobileClient.userManager.login(testUser.phone, testUser.password);
+                if (result.success) {
+                    mobileClient.currentUser = result.user;
+                    showApp();
+                    updateMobileUI();
+                    console.log('✅ تست سریع موفق - کاربر وارد شد');
+                }
+            }, 500);
+        }
     </script>
 </body>
 </html>
