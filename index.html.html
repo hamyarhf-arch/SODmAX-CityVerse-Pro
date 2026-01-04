@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>پنل کاربری SODmAX CityVerse - نسخه کامل (تست شده)</title>
+    <title>پنل کاربری SODmAX CityVerse - نسخه کامل (متصل به Supabase)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- افزودن اسکریپت‌های Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
+        /* تمام استایل‌های قبلی بدون تغییر */
         :root {
             --primary: #0066FF;
             --primary-dark: #0052CC;
@@ -2378,7 +2383,8 @@
                         </div>
                         
                         <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                            <div style="width: 48px; height: 48px; background: var(--gradient-accent); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                            <div style="width: 48px; height: 48px; background: var(--gradient-accent); border-radius: var(--radius-full); display: flex;
+                                align-items: center; justify-content: center; color: white; font-size: 20px;">
                                 <i class="fas fa-book"></i>
                             </div>
                             <div>
@@ -2617,141 +2623,26 @@
     <div class="toast-container-mobile" id="toastContainerMobile"></div>
     
     <script>
+        // ==================== تنظیمات Supabase ====================
+        const SUPABASE_URL = 'https://your-project-url.supabase.co'; // جایگزین کن
+        const SUPABASE_ANON_KEY = 'your-anon-key'; // جایگزین کن
+
+        // ایجاد کلاینت Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true
+            }
+        });
+
         // ==================== سیستم مدیریت کاربران ====================
         class UserManager {
             constructor() {
                 this.currentUser = null;
-                this.usersKey = 'sodmax_users';
                 this.currentUserKey = 'sodmax_current_user';
-                this.transactionsKey = 'sodmax_transactions';
-                this.notificationsKey = 'sodmax_notifications';
-                this.referralsKey = 'sodmax_referrals';
-                
-                this.initializeData();
-            }
-            
-            initializeData() {
-                // اگر داده‌ها وجود ندارند، نمونه اولیه ایجاد کن
-                if (!localStorage.getItem(this.usersKey)) {
-                    const defaultUsers = [
-                        {
-                            id: 1,
-                            name: "علی محمدی",
-                            phone: "09123456789",
-                            password: this.hashPassword("123456"),
-                            avatar: "ع",
-                            level: 5,
-                            totalEarned: 124500,
-                            referralCount: 24,
-                            referralEarnings: 124000,
-                            joinDate: "۱۴۰۲/۰۵/۱۰",
-                            lastLogin: new Date().toLocaleDateString('fa-IR'),
-                            sodBalance: 1845200,
-                            tomanBalance: 28400,
-                            miningPower: 18,
-                            miningMultiplier: 1,
-                            autoMining: false,
-                            todayEarned: 2450,
-                            totalMined: 1845200,
-                            completedMissions: 48,
-                            referralCode: "ALI12345",
-                            referralLink: "https://sodmax.city/invite/ali123"
-                        }
-                    ];
-                    localStorage.setItem(this.usersKey, JSON.stringify(defaultUsers));
-                }
-                
-                // اگر تراکنش‌ها وجود ندارند، نمونه اولیه ایجاد کن
-                if (!localStorage.getItem(this.transactionsKey)) {
-                    const defaultTransactions = [
-                        {
-                            id: 1,
-                            userId: 1,
-                            type: "برداشت تومان",
-                            amount: 50000,
-                            currency: "تومان",
-                            status: "موفق",
-                            date: "امروز - ۱۴:۳۰",
-                            icon: "fa-download",
-                            color: "var(--secondary)"
-                        },
-                        {
-                            id: 2,
-                            userId: 1,
-                            type: "ارتقاء ماینر",
-                            amount: -25000,
-                            currency: "SOD",
-                            status: "موفق",
-                            date: "دیروز - ۱۰:۱۵",
-                            icon: "fa-arrow-up",
-                            color: "var(--accent)"
-                        },
-                        {
-                            id: 3,
-                            userId: 1,
-                            type: "استخراج دستی",
-                            amount: 180,
-                            currency: "SOD",
-                            status: "موفق",
-                            date: "امروز - ۱۲:۴۵",
-                            icon: "fa-hard-hat",
-                            color: "var(--primary)"
-                        }
-                    ];
-                    localStorage.setItem(this.transactionsKey, JSON.stringify(defaultTransactions));
-                }
-                
-                // اگر نوتیفیکیشن‌ها وجود ندارند، نمونه اولیه ایجاد کن
-                if (!localStorage.getItem(this.notificationsKey)) {
-                    const defaultNotifications = [
-                        {
-                            id: 1,
-                            userId: 1,
-                            title: "🎉 به روزرسانی جدید",
-                            message: "سیستم 3D و افکت‌های جدید اضافه شد!",
-                            time: "۵ دقیقه پیش",
-                            read: false
-                        },
-                        {
-                            id: 2,
-                            userId: 1,
-                            title: "💰 پاداش دریافت شد",
-                            message: "مأموریت کلیک روزانه تکمیل شد! +۵۰۰ تومان",
-                            time: "۲ ساعت پیش",
-                            read: false
-                        },
-                        {
-                            id: 3,
-                            userId: 1,
-                            title: "🤝 دعوت موفق",
-                            message: "دوست شما ثبت‌نام کرد! +۱,۰۰۰ تومان پاداش",
-                            time: "۱ روز پیش",
-                            read: false
-                        }
-                    ];
-                    localStorage.setItem(this.notificationsKey, JSON.stringify(defaultNotifications));
-                }
-                
-                // اگر داده‌های دعوت وجود ندارند، نمونه اولیه ایجاد کن
-                if (!localStorage.getItem(this.referralsKey)) {
-                    const defaultReferrals = [
-                        {
-                            id: 1,
-                            userId: 1,
-                            totalInvites: 24,
-                            activeInvites: 18,
-                            pendingInvites: 3,
-                            totalEarned: 124000,
-                            referralCode: "ALI12345",
-                            referralLink: "https://sodmax.city/invite/ali123"
-                        }
-                    ];
-                    localStorage.setItem(this.referralsKey, JSON.stringify(defaultReferrals));
-                }
             }
             
             hashPassword(password) {
-                // در این نسخه ساده، هش ساده استفاده می‌کنیم
                 return btoa(password);
             }
             
@@ -2759,116 +2650,140 @@
                 return this.hashPassword(password) === hashedPassword;
             }
             
-            register(name, phone, password, referralCode = null) {
-                const users = this.getUsers();
-                
-                // بررسی تکراری نبودن شماره موبایل
-                if (users.find(user => user.phone === phone)) {
-                    return { success: false, message: "این شماره موبایل قبلاً ثبت‌نام کرده است" };
-                }
-                
-                // ایجاد کاربر جدید
-                const newUser = {
-                    id: Date.now(),
-                    name: name,
-                    phone: phone,
-                    password: this.hashPassword(password),
-                    avatar: name.charAt(0),
-                    level: 1,
-                    totalEarned: 0,
-                    referralCount: 0,
-                    referralEarnings: 0,
-                    joinDate: new Date().toLocaleDateString('fa-IR'),
-                    lastLogin: new Date().toLocaleDateString('fa-IR'),
-                    sodBalance: 1000, // اعتبار اولیه
-                    tomanBalance: 0,
-                    miningPower: 5,
-                    miningMultiplier: 1,
-                    autoMining: false,
-                    todayEarned: 0,
-                    totalMined: 0,
-                    completedMissions: 0,
-                    referralCode: this.generateReferralCode(name),
-                    referralLink: `https://sodmax.city/invite/${this.generateReferralCode(name)}`
-                };
-                
-                // اگر کد دعوت وارد شده باشد
-                let referralBonus = 0;
-                if (referralCode) {
-                    // پیدا کردن کاربر معرف
-                    const referrer = users.find(user => user.referralCode === referralCode);
-                    if (referrer) {
-                        // اضافه کردن پاداش به کاربر معرف
-                        referrer.tomanBalance += 1000;
-                        referrer.totalEarned += 1000;
-                        referrer.referralEarnings += 1000;
-                        referrer.referralCount++;
-                        
-                        // به‌روزرسانی کاربر معرف
-                        this.updateUser(referrer);
-                        
-                        // ثبت تراکنش برای کاربر معرف
-                        this.addTransaction(referrer.id, {
-                            type: "پاداش دعوت",
-                            amount: 1000,
-                            currency: "تومان",
-                            status: "موفق",
-                            icon: "fa-user-plus",
-                            color: "var(--secondary)"
-                        });
-                        
-                        // پاداش اضافی برای کاربر جدید
-                        newUser.sodBalance += 500; // 500 SOD اضافی
-                        referralBonus = 500;
-                        
-                        // ایجاد نوتیفیکیشن برای کاربر معرف
-                        const notifications = this.getNotifications();
-                        notifications.push({
-                            id: Date.now() + 1,
-                            userId: referrer.id,
-                            title: "🤝 دعوت موفق",
-                            message: `${name} با کد دعوت شما ثبت‌نام کرد! +۱,۰۰۰ تومان پاداش`,
-                            time: "همین حالا",
-                            read: false
-                        });
-                        localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
+            async register(name, phone, password, referralCode = null) {
+                try {
+                    // بررسی تکراری نبودن شماره موبایل
+                    const { data: existingUser, error: checkError } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('phone', phone)
+                        .single();
+                    
+                    if (existingUser) {
+                        return { success: false, message: "این شماره موبایل قبلاً ثبت‌نام کرده است" };
                     }
+                    
+                    // ایجاد کاربر جدید
+                    const newUser = {
+                        id: Date.now(),
+                        name: name,
+                        phone: phone,
+                        password: this.hashPassword(password),
+                        avatar: name.charAt(0),
+                        level: 1,
+                        total_earned: 0,
+                        referral_count: 0,
+                        referral_earnings: 0,
+                        join_date: new Date().toLocaleDateString('fa-IR'),
+                        last_login: new Date().toLocaleDateString('fa-IR'),
+                        sod_balance: 1000,
+                        toman_balance: 0,
+                        mining_power: 5,
+                        mining_multiplier: 1,
+                        auto_mining: false,
+                        today_earned: 0,
+                        total_mined: 0,
+                        completed_missions: 0,
+                        referral_code: this.generateReferralCode(name),
+                        referral_link: `https://sodmax.city/invite/${this.generateReferralCode(name)}`
+                    };
+                    
+                    // اگر کد دعوت وارد شده باشد
+                    let referralBonus = 0;
+                    if (referralCode) {
+                        // پیدا کردن کاربر معرف
+                        const { data: referrer, error: refError } = await supabase
+                            .from('users')
+                            .select('*')
+                            .eq('referral_code', referralCode)
+                            .single();
+                        
+                        if (referrer) {
+                            // به‌روزرسانی کاربر معرف
+                            const updates = {
+                                toman_balance: referrer.toman_balance + 1000,
+                                total_earned: referrer.total_earned + 1000,
+                                referral_earnings: referrer.referral_earnings + 1000,
+                                referral_count: referrer.referral_count + 1
+                            };
+                            
+                            await supabase
+                                .from('users')
+                                .update(updates)
+                                .eq('id', referrer.id);
+                            
+                            // ثبت تراکنش برای کاربر معرف
+                            await supabase
+                                .from('transactions')
+                                .insert([{
+                                    user_id: referrer.id,
+                                    type: "پاداش دعوت",
+                                    amount: 1000,
+                                    currency: "تومان",
+                                    status: "موفق",
+                                    date: new Date().toLocaleDateString('fa-IR') + " - " + new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+                                    icon: "fa-user-plus",
+                                    color: "var(--secondary)"
+                                }]);
+                            
+                            // پاداش اضافی برای کاربر جدید
+                            newUser.sod_balance += 500;
+                            referralBonus = 500;
+                            
+                            // ایجاد نوتیفیکیشن برای کاربر معرف
+                            await supabase
+                                .from('notifications')
+                                .insert([{
+                                    user_id: referrer.id,
+                                    title: "🤝 دعوت موفق",
+                                    message: `${name} با کد دعوت شما ثبت‌نام کرد! +۱,۰۰۰ تومان پاداش`,
+                                    time: "همین حالا"
+                                }]);
+                        }
+                    }
+                    
+                    // ذخیره کاربر در Supabase
+                    const { data: savedUser, error } = await supabase
+                        .from('users')
+                        .insert([newUser])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    // ایجاد داده‌های دعوت
+                    await supabase
+                        .from('referrals')
+                        .insert([{
+                            user_id: savedUser.id,
+                            total_invites: 0,
+                            active_invites: 0,
+                            pending_invites: 0,
+                            total_earned: 0,
+                            referral_code: savedUser.referral_code,
+                            referral_link: savedUser.referral_link
+                        }]);
+                    
+                    // ایجاد نوتیفیکیشن خوش‌آمدگویی
+                    await supabase
+                        .from('notifications')
+                        .insert([{
+                            user_id: savedUser.id,
+                            title: "👋 به SODmAX خوش آمدید",
+                            message: `حساب کاربری شما با موفقیت ایجاد شد! ۱۰۰۰ SOD هدیه دریافت کردید. ${referralBonus > 0 ? `+ ${referralBonus} SOD پاداش دعوت` : ''}`,
+                            time: "همین حالا"
+                        }]);
+                    
+                    return { 
+                        success: true, 
+                        user: savedUser,
+                        referralBonus: referralBonus
+                    };
+                    
+                } catch (error) {
+                    console.error('خطا در ثبت‌نام:', error);
+                    return { success: false, message: "خطا در ثبت‌نام. لطفاً مجدداً تلاش کنید." };
                 }
-                
-                users.push(newUser);
-                localStorage.setItem(this.usersKey, JSON.stringify(users));
-                
-                // ایجاد نوتیفیکیشن خوش‌آمدگویی
-                const notifications = this.getNotifications();
-                notifications.push({
-                    id: Date.now() + 2,
-                    userId: newUser.id,
-                    title: "👋 به SODmAX خوش آمدید",
-                    message: `حساب کاربری شما با موفقیت ایجاد شد! ۱۰۰۰ SOD هدیه دریافت کردید. ${referralBonus > 0 ? `+ ${referralBonus} SOD پاداش دعوت` : ''}`,
-                    time: "همین حالا",
-                    read: false
-                });
-                localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
-                
-                // ایجاد داده‌های دعوت
-                const referrals = this.getReferrals();
-                referrals.push({
-                    id: newUser.id,
-                    userId: newUser.id,
-                    totalInvites: 0,
-                    activeInvites: 0,
-                    pendingInvites: 0,
-                    totalEarned: 0,
-                    referralCode: newUser.referralCode,
-                    referralLink: newUser.referralLink
-                });
-                localStorage.setItem(this.referralsKey, JSON.stringify(referrals));
-                
-                return { 
-                    success: true, 
-                    user: newUser,
-                    referralBonus: referralBonus
-                };
             }
             
             generateReferralCode(name) {
@@ -2877,27 +2792,38 @@
                 return `${namePart}${randomPart}`;
             }
             
-            login(phone, password) {
-                const users = this.getUsers();
-                const user = users.find(user => user.phone === phone);
-                
-                if (!user) {
-                    return { success: false, message: "شماره موبایل یا رمز عبور اشتباه است" };
+            async login(phone, password) {
+                try {
+                    const { data: user, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('phone', phone)
+                        .single();
+                    
+                    if (error || !user) {
+                        return { success: false, message: "شماره موبایل یا رمز عبور اشتباه است" };
+                    }
+                    
+                    if (!this.verifyPassword(password, user.password)) {
+                        return { success: false, message: "شماره موبایل یا رمز عبور اشتباه است" };
+                    }
+                    
+                    // به‌روزرسانی تاریخ آخرین ورود
+                    await supabase
+                        .from('users')
+                        .update({ last_login: new Date().toLocaleDateString('fa-IR') })
+                        .eq('id', user.id);
+                    
+                    // ذخیره در LocalStorage
+                    localStorage.setItem(this.currentUserKey, JSON.stringify(user));
+                    this.currentUser = user;
+                    
+                    return { success: true, user: user };
+                    
+                } catch (error) {
+                    console.error('خطا در ورود:', error);
+                    return { success: false, message: "خطا در ورود. لطفاً مجدداً تلاش کنید." };
                 }
-                
-                if (!this.verifyPassword(password, user.password)) {
-                    return { success: false, message: "شماره موبایل یا رمز عبور اشتباه است" };
-                }
-                
-                // به‌روزرسانی تاریخ آخرین ورود
-                user.lastLogin = new Date().toLocaleDateString('fa-IR');
-                localStorage.setItem(this.usersKey, JSON.stringify(users));
-                
-                // ذخیره کاربر فعلی
-                localStorage.setItem(this.currentUserKey, JSON.stringify(user));
-                this.currentUser = user;
-                
-                return { success: true, user: user };
             }
             
             logout() {
@@ -2916,146 +2842,205 @@
                 return this.currentUser;
             }
             
-            updateUser(updatedUser) {
-                const users = this.getUsers();
-                const index = users.findIndex(user => user.id === updatedUser.id);
-                
-                if (index !== -1) {
-                    users[index] = updatedUser;
-                    localStorage.setItem(this.usersKey, JSON.stringify(users));
+            async updateUser(updatedUser) {
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .update(updatedUser)
+                        .eq('id', updatedUser.id)
+                        .select()
+                        .single();
                     
-                    // به‌روزرسانی کاربر فعلی
-                    if (this.currentUser && this.currentUser.id === updatedUser.id) {
-                        this.currentUser = updatedUser;
-                        localStorage.setItem(this.currentUserKey, JSON.stringify(updatedUser));
+                    if (error) throw error;
+                    
+                    if (data) {
+                        this.currentUser = data;
+                        localStorage.setItem(this.currentUserKey, JSON.stringify(data));
+                        return true;
                     }
+                    return false;
+                } catch (error) {
+                    console.error('خطا در به‌روزرسانی کاربر:', error);
+                    return false;
+                }
+            }
+            
+            async getTransactions(userId) {
+                try {
+                    const { data, error } = await supabase
+                        .from('transactions')
+                        .select('*')
+                        .eq('user_id', userId)
+                        .order('created_at', { ascending: false });
                     
+                    if (error) throw error;
+                    return data || [];
+                } catch (error) {
+                    console.error('خطا در دریافت تراکنش‌ها:', error);
+                    return [];
+                }
+            }
+            
+            async addTransaction(userId, transaction) {
+                try {
+                    const transactionData = {
+                        user_id: userId,
+                        date: new Date().toLocaleDateString('fa-IR') + " - " + new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
+                        ...transaction
+                    };
+                    
+                    const { data, error } = await supabase
+                        .from('transactions')
+                        .insert([transactionData])
+                        .select()
+                        .single();
+                    
+                    if (error) throw error;
+                    return data;
+                } catch (error) {
+                    console.error('خطا در ثبت تراکنش:', error);
+                    return null;
+                }
+            }
+            
+            async getNotifications(userId) {
+                try {
+                    const { data, error } = await supabase
+                        .from('notifications')
+                        .select('*')
+                        .eq('user_id', userId)
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    return data || [];
+                } catch (error) {
+                    console.error('خطا در دریافت نوتیفیکیشن‌ها:', error);
+                    return [];
+                }
+            }
+            
+            async markNotificationAsRead(notificationId) {
+                try {
+                    const { error } = await supabase
+                        .from('notifications')
+                        .update({ read: true })
+                        .eq('id', notificationId);
+                    
+                    if (error) throw error;
                     return true;
+                } catch (error) {
+                    console.error('خطا در بروزرسانی نوتیفیکیشن:', error);
+                    return false;
                 }
-                return false;
             }
             
-            getUsers() {
-                return JSON.parse(localStorage.getItem(this.usersKey)) || [];
-            }
-            
-            getTransactions(userId) {
-                const transactions = JSON.parse(localStorage.getItem(this.transactionsKey)) || [];
-                return transactions.filter(t => t.userId === userId);
-            }
-            
-            addTransaction(userId, transaction) {
-                const transactions = this.getTransactions();
-                transaction.id = Date.now();
-                transaction.userId = userId;
-                transaction.date = new Date().toLocaleDateString('fa-IR') + " - " + new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
-                
-                transactions.unshift(transaction);
-                localStorage.setItem(this.transactionsKey, JSON.stringify(transactions));
-                
-                return transaction;
-            }
-            
-            getNotifications(userId) {
-                const notifications = JSON.parse(localStorage.getItem(this.notificationsKey)) || [];
-                return notifications.filter(n => n.userId === userId);
-            }
-            
-            markNotificationAsRead(notificationId) {
-                const notifications = JSON.parse(localStorage.getItem(this.notificationsKey)) || [];
-                const index = notifications.findIndex(n => n.id === notificationId);
-                
-                if (index !== -1) {
-                    notifications[index].read = true;
-                    localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
-                    return true;
+            async getUnreadNotificationsCount(userId) {
+                try {
+                    const notifications = await this.getNotifications(userId);
+                    return notifications.filter(n => !n.read).length;
+                } catch (error) {
+                    console.error('خطا در شمارش نوتیفیکیشن‌ها:', error);
+                    return 0;
                 }
-                return false;
             }
             
-            getUnreadNotificationsCount(userId) {
-                const notifications = this.getNotifications(userId);
-                return notifications.filter(n => !n.read).length;
-            }
-            
-            getReferrals(userId) {
-                const referrals = JSON.parse(localStorage.getItem(this.referralsKey)) || [];
-                return referrals.find(r => r.userId === userId);
-            }
-            
-            updateReferrals(userId, updatedReferrals) {
-                const referrals = JSON.parse(localStorage.getItem(this.referralsKey)) || [];
-                const index = referrals.findIndex(r => r.userId === userId);
-                
-                if (index !== -1) {
-                    referrals[index] = updatedReferrals;
-                    localStorage.setItem(this.referralsKey, JSON.stringify(referrals));
-                    return true;
-                }
-                return false;
-            }
-            
-            addReferral(userId) {
-                const referrals = this.getReferrals(userId);
-                if (referrals) {
-                    referrals.totalInvites++;
-                    referrals.pendingInvites++;
-                    this.updateReferrals(userId, referrals);
+            async getReferrals(userId) {
+                try {
+                    const { data, error } = await supabase
+                        .from('referrals')
+                        .select('*')
+                        .eq('user_id', userId)
+                        .single();
                     
-                    // به‌روزرسانی کاربر
-                    const user = this.getUsers().find(u => u.id === userId);
-                    if (user) {
-                        user.referralCount++;
-                        this.updateUser(user);
-                    }
-                    
-                    return referrals;
+                    if (error) throw error;
+                    return data;
+                } catch (error) {
+                    console.error('خطا در دریافت داده‌های دعوت:', error);
+                    return null;
                 }
-                return null;
             }
             
-            confirmReferral(userId) {
-                const referrals = this.getReferrals(userId);
-                if (referrals && referrals.pendingInvites > 0) {
-                    referrals.pendingInvites--;
-                    referrals.activeInvites++;
-                    referrals.totalEarned += 1000; // 1000 تومان پاداش
-                    this.updateReferrals(userId, referrals);
-                    
-                    // به‌روزرسانی کاربر
-                    const user = this.getUsers().find(u => u.id === userId);
-                    if (user) {
-                        user.referralEarnings += 1000;
-                        user.tomanBalance += 1000;
-                        user.totalEarned += 1000;
-                        this.updateUser(user);
+            async addReferral(userId) {
+                try {
+                    const referrals = await this.getReferrals(userId);
+                    if (referrals) {
+                        const updates = {
+                            total_invites: referrals.total_invites + 1,
+                            pending_invites: referrals.pending_invites + 1
+                        };
                         
-                        // ثبت تراکنش
-                        this.addTransaction(userId, {
-                            type: "پاداش دعوت",
-                            amount: 1000,
-                            currency: "تومان",
-                            status: "موفق",
-                            icon: "fa-user-plus",
-                            color: "var(--secondary)"
-                        });
+                        await supabase
+                            .from('referrals')
+                            .update(updates)
+                            .eq('id', referrals.id);
                         
-                        // ارسال نوتیفیکیشن
-                        const notifications = this.getNotifications();
-                        notifications.push({
-                            id: Date.now(),
-                            userId: userId,
-                            title: "🤝 دعوت موفق",
-                            message: "دوست شما ثبت‌نام و تأیید شد! +۱,۰۰۰ تومان پاداش",
-                            time: "همین حالا",
-                            read: false
-                        });
-                        localStorage.setItem(this.notificationsKey, JSON.stringify(notifications));
+                        // به‌روزرسانی کاربر
+                        const user = this.getCurrentUser();
+                        if (user) {
+                            user.referral_count++;
+                            await this.updateUser(user);
+                        }
+                        
+                        return true;
                     }
-                    
-                    return referrals;
+                    return false;
+                } catch (error) {
+                    console.error('خطا در اضافه کردن دعوت:', error);
+                    return false;
                 }
-                return null;
+            }
+            
+            async confirmReferral(userId) {
+                try {
+                    const referrals = await this.getReferrals(userId);
+                    if (referrals && referrals.pending_invites > 0) {
+                        const updates = {
+                            pending_invites: referrals.pending_invites - 1,
+                            active_invites: referrals.active_invites + 1,
+                            total_earned: referrals.total_earned + 1000
+                        };
+                        
+                        await supabase
+                            .from('referrals')
+                            .update(updates)
+                            .eq('id', referrals.id);
+                        
+                        // به‌روزرسانی کاربر
+                        const user = this.getCurrentUser();
+                        if (user) {
+                            user.referral_earnings += 1000;
+                            user.toman_balance += 1000;
+                            user.total_earned += 1000;
+                            await this.updateUser(user);
+                            
+                            // ثبت تراکنش
+                            await this.addTransaction(userId, {
+                                type: "پاداش دعوت",
+                                amount: 1000,
+                                currency: "تومان",
+                                status: "موفق",
+                                icon: "fa-user-plus",
+                                color: "var(--secondary)"
+                            });
+                            
+                            // ایجاد نوتیفیکیشن
+                            await supabase
+                                .from('notifications')
+                                .insert([{
+                                    user_id: userId,
+                                    title: "🤝 دعوت موفق",
+                                    message: "دوست شما ثبت‌نام و تأیید شد! +۱,۰۰۰ تومان پاداش",
+                                    time: "همین حالا"
+                                }]);
+                        }
+                        
+                        return true;
+                    }
+                    return false;
+                } catch (error) {
+                    console.error('خطا در تأیید دعوت:', error);
+                    return false;
+                }
             }
         }
 
@@ -3079,18 +3064,18 @@
             }
             
             // استخراج دستی
-            mine(user) {
+            async mine(user) {
                 if (!user) return 0;
                 
                 // محاسبه مقدار SOD استخراج شده
-                const baseEarn = user.miningPower || 5;
-                const multiplier = user.miningMultiplier || 1;
+                const baseEarn = user.mining_power || 5;
+                const multiplier = user.mining_multiplier || 1;
                 const earned = baseEarn * multiplier;
                 
                 // افزایش موجودی کاربر
-                user.sodBalance = (user.sodBalance || 0) + earned;
-                user.todayEarned = (user.todayEarned || 0) + earned;
-                user.totalMined = (user.totalMined || 0) + earned;
+                user.sod_balance = (user.sod_balance || 0) + earned;
+                user.today_earned = (user.today_earned || 0) + earned;
+                user.total_mined = (user.total_mined || 0) + earned;
                 
                 // افزایش پیشرفت مأموریت کلیک
                 if (this.gameData.missions.active[0]) {
@@ -3098,7 +3083,7 @@
                 }
                 
                 // ثبت تراکنش
-                this.userManager.addTransaction(user.id, {
+                await this.userManager.addTransaction(user.id, {
                     type: "استخراج دستی",
                     amount: earned,
                     currency: "SOD",
@@ -3108,35 +3093,35 @@
                 });
                 
                 // به‌روزرسانی کاربر
-                this.userManager.updateUser(user);
+                await this.userManager.updateUser(user);
                 this.currentUser = user;
                 
                 return earned;
             }
             
             // استخراج اتوماتیک
-            autoMine(user) {
-                if (!user || !user.autoMining) return 0;
+            async autoMine(user) {
+                if (!user || !user.auto_mining) return 0;
                 
-                const earned = this.mine(user);
+                const earned = await this.mine(user);
                 return earned;
             }
             
             // فعال/غیرفعال کردن استخراج اتوماتیک
-            toggleAutoMining(user) {
+            async toggleAutoMining(user) {
                 if (!user) return false;
                 
-                user.autoMining = !user.autoMining;
-                this.userManager.updateUser(user);
+                user.auto_mining = !user.auto_mining;
+                await this.userManager.updateUser(user);
                 this.currentUser = user;
                 
-                if (user.autoMining) {
+                if (user.auto_mining) {
                     this.startAutoMining();
                 } else {
                     this.stopAutoMining();
                 }
                 
-                return user.autoMining;
+                return user.auto_mining;
             }
             
             // شروع استخراج اتوماتیک
@@ -3145,9 +3130,9 @@
                     clearInterval(this.autoMiningInterval);
                 }
                 
-                this.autoMiningInterval = setInterval(() => {
-                    if (this.currentUser && this.currentUser.autoMining) {
-                        const earned = this.autoMine(this.currentUser);
+                this.autoMiningInterval = setInterval(async () => {
+                    if (this.currentUser && this.currentUser.auto_mining) {
+                        const earned = await this.autoMine(this.currentUser);
                         if (earned > 0) {
                             // نمایش افکت هر 5 ثانیه
                             this.createMiningEffect(earned);
@@ -3168,20 +3153,20 @@
             }
             
             // افزایش قدرت استخراج (بوست)
-            boostMining(user) {
+            async boostMining(user) {
                 if (!user) return false;
                 
                 const cost = 5000;
-                if (user.sodBalance < cost) {
+                if (user.sod_balance < cost) {
                     return false;
                 }
                 
-                user.sodBalance -= cost;
-                user.miningMultiplier = 3;
+                user.sod_balance -= cost;
+                user.mining_multiplier = 3;
                 this.boostEndTime = Date.now() + 30000; // 30 ثانیه
                 
                 // ثبت تراکنش
-                this.userManager.addTransaction(user.id, {
+                await this.userManager.addTransaction(user.id, {
                     type: "خرید بوست",
                     amount: -cost,
                     currency: "SOD",
@@ -3191,7 +3176,7 @@
                 });
                 
                 // به‌روزرسانی کاربر
-                this.userManager.updateUser(user);
+                await this.userManager.updateUser(user);
                 this.currentUser = user;
                 
                 // شروع تایمر برای بازگشت به حالت عادی
@@ -3209,7 +3194,7 @@
                 this.boostInterval = setInterval(() => {
                     if (this.boostEndTime && Date.now() >= this.boostEndTime) {
                         if (this.currentUser) {
-                            this.currentUser.miningMultiplier = 1;
+                            this.currentUser.mining_multiplier = 1;
                             this.userManager.updateUser(this.currentUser);
                             updateMobileUI();
                         }
@@ -3228,20 +3213,20 @@
             }
             
             // ارتقاء ماینر
-            upgradeMiner(user) {
+            async upgradeMiner(user) {
                 if (!user) return false;
                 
                 const cost = 50000;
-                if (user.sodBalance < cost) {
+                if (user.sod_balance < cost) {
                     return false;
                 }
                 
-                user.sodBalance -= cost;
-                user.miningPower = (user.miningPower || 5) + 5;
+                user.sod_balance -= cost;
+                user.mining_power = (user.mining_power || 5) + 5;
                 user.level = (user.level || 1) + 1;
                 
                 // ثبت تراکنش
-                this.userManager.addTransaction(user.id, {
+                await this.userManager.addTransaction(user.id, {
                     type: "ارتقاء ماینر",
                     amount: -cost,
                     currency: "SOD",
@@ -3251,35 +3236,33 @@
                 });
                 
                 // به‌روزرسانی کاربر
-                this.userManager.updateUser(user);
+                await this.userManager.updateUser(user);
                 this.currentUser = user;
                 
-                // ارسال نوتیفیکیشن
-                const notifications = JSON.parse(localStorage.getItem(this.userManager.notificationsKey)) || [];
-                notifications.push({
-                    id: Date.now(),
-                    userId: user.id,
-                    title: "🎉 ارتقاء موفق",
-                    message: `ماینر شما به سطح ${user.level} ارتقا یافت! قدرت +۵ افزایش یافت.`,
-                    time: "همین حالا",
-                    read: false
-                });
-                localStorage.setItem(this.userManager.notificationsKey, JSON.stringify(notifications));
+                // ایجاد نوتیفیکیشن
+                await supabase
+                    .from('notifications')
+                    .insert([{
+                        user_id: user.id,
+                        title: "🎉 ارتقاء موفق",
+                        message: `ماینر شما به سطح ${user.level} ارتقا یافت! قدرت +۵ افزایش یافت.`,
+                        time: "همین حالا"
+                    }]);
                 
                 return true;
             }
             
             // تکمیل مأموریت
-            completeMission(user, missionId) {
+            async completeMission(user, missionId) {
                 const mission = this.gameData.missions.active.find(m => m.id === missionId);
                 if (!mission) return false;
                 
-                user.tomanBalance += mission.reward;
-                user.totalEarned += mission.reward;
-                user.completedMissions = (user.completedMissions || 0) + 1;
+                user.toman_balance += mission.reward;
+                user.total_earned += mission.reward;
+                user.completed_missions = (user.completed_missions || 0) + 1;
                 
                 // ثبت تراکنش
-                this.userManager.addTransaction(user.id, {
+                await this.userManager.addTransaction(user.id, {
                     type: "پاداش مأموریت",
                     amount: mission.reward,
                     currency: "تومان",
@@ -3295,7 +3278,7 @@
                 this.addNewMission();
                 
                 // به‌روزرسانی کاربر
-                this.userManager.updateUser(user);
+                await this.userManager.updateUser(user);
                 this.currentUser = user;
                 
                 return mission.reward;
@@ -3325,18 +3308,18 @@
             }
             
             // برداشت تومان
-            withdrawToman(user) {
+            async withdrawToman(user) {
                 if (!user) return false;
                 
-                if (user.tomanBalance < 10000) {
+                if (user.toman_balance < 10000) {
                     return false;
                 }
                 
-                const amount = user.tomanBalance;
-                user.tomanBalance = 0;
+                const amount = user.toman_balance;
+                user.toman_balance = 0;
                 
                 // ثبت تراکنش
-                this.userManager.addTransaction(user.id, {
+                await this.userManager.addTransaction(user.id, {
                     type: "برداشت تومان",
                     amount: amount,
                     currency: "تومان",
@@ -3346,28 +3329,24 @@
                 });
                 
                 // به‌روزرسانی کاربر
-                this.userManager.updateUser(user);
+                await this.userManager.updateUser(user);
                 this.currentUser = user;
                 
                 return amount;
             }
             
             // دعوت دوست
-            inviteFriend(user) {
+            async inviteFriend(user) {
                 if (!user) return false;
                 
                 // اضافه کردن دعوت جدید
-                const referrals = this.userManager.addReferral(user.id);
-                
-                if (referrals) {
-                    return true;
-                }
-                return false;
+                const success = await this.userManager.addReferral(user.id);
+                return success;
             }
             
             // تأیید دعوت
-            confirmReferral(userId) {
-                return this.userManager.confirmReferral(userId);
+            async confirmReferral(userId) {
+                return await this.userManager.confirmReferral(userId);
             }
             
             // فرمت اعداد
@@ -3453,7 +3432,19 @@
         const mobileClient = new MobileCityVerse();
 
         // راه‌اندازی
-        function initializeMobile() {
+        async function initializeMobile() {
+            // تست اتصال به Supabase
+            try {
+                const { data, error } = await supabase.from('users').select('count');
+                if (error) {
+                    console.warn('⚠️ اتصال به دیتابیس برقرار نشد. از حالت آفلاین استفاده می‌شود.');
+                } else {
+                    console.log('✅ اتصال به Supabase موفقیت‌آمیز بود');
+                }
+            } catch (error) {
+                console.error('❌ خطا در اتصال:', error);
+            }
+            
             // بررسی اگر کاربر وارد شده است
             const currentUser = mobileClient.userManager.getCurrentUser();
             
@@ -3464,7 +3455,7 @@
                 updateMobileUI();
                 
                 // اگر استخراج اتوماتیک فعال است، شروع کن
-                if (currentUser.autoMining) {
+                if (currentUser.auto_mining) {
                     mobileClient.startAutoMining();
                 }
                 
@@ -3504,7 +3495,7 @@
         }
 
         // بروزرسانی UI
-        function updateMobileUI() {
+        async function updateMobileUI() {
             const user = mobileClient.currentUser;
             if (!user) return;
             
@@ -3514,52 +3505,52 @@
             document.getElementById('userLevelDisplay').textContent = `آنلاین - سطح ${user.level}`;
             
             // آمار سریع
-            document.getElementById('quickSodBalance').textContent = mobileClient.formatNumber(user.sodBalance);
-            document.getElementById('quickTomanBalance').textContent = mobileClient.formatNumber(user.tomanBalance);
-            document.getElementById('quickReferralCount').textContent = user.referralCount;
+            document.getElementById('quickSodBalance').textContent = mobileClient.formatNumber(user.sod_balance);
+            document.getElementById('quickTomanBalance').textContent = mobileClient.formatNumber(user.toman_balance);
+            document.getElementById('quickReferralCount').textContent = user.referral_count;
             
             // استخراج
-            const earned = (user.miningPower || 5) * (user.miningMultiplier || 1);
+            const earned = (user.mining_power || 5) * (user.mining_multiplier || 1);
             document.getElementById('clickRewardMobile').textContent = `+${earned} SOD`;
             document.getElementById('miningPowerMobile').textContent = `${earned}x`;
-            document.getElementById('miningTodayMobile').textContent = mobileClient.formatNumber(user.todayEarned || 0);
-            document.getElementById('miningTotalMobile').textContent = mobileClient.formatNumber(user.totalMined || 0);
-            document.getElementById('miningTodayText').textContent = `+${(user.todayEarned || 0).toLocaleString('fa-IR')} SOD`;
+            document.getElementById('miningTodayMobile').textContent = mobileClient.formatNumber(user.today_earned || 0);
+            document.getElementById('miningTotalMobile').textContent = mobileClient.formatNumber(user.total_mined || 0);
+            document.getElementById('miningTodayText').textContent = `+${(user.today_earned || 0).toLocaleString('fa-IR')} SOD`;
             
             // ارتقاء ماینر
             document.getElementById('minerLevel').textContent = user.level;
             const nextLevelCost = mobileClient.getNextLevelCost(user.level);
             document.getElementById('nextLevelCost').textContent = nextLevelCost.toLocaleString('fa-IR');
-            document.getElementById('currentPower').textContent = `${user.miningPower || 5}x`;
-            document.getElementById('nextPower').textContent = `${(user.miningPower || 5) + 5}x`;
+            document.getElementById('currentPower').textContent = `${user.mining_power || 5}x`;
+            document.getElementById('nextPower').textContent = `${(user.mining_power || 5) + 5}x`;
             document.getElementById('upgradeCost').textContent = `${nextLevelCost.toLocaleString('fa-IR')} SOD`;
             document.getElementById('upgradeCostBtn').textContent = mobileClient.formatNumber(nextLevelCost);
             
             // کیف پول
-            document.getElementById('walletSodBalance').textContent = (user.sodBalance || 0).toLocaleString('fa-IR');
-            document.getElementById('walletTomanBalance').textContent = (user.tomanBalance || 0).toLocaleString('fa-IR');
-            document.getElementById('modalSodBalance').textContent = `${(user.sodBalance || 0).toLocaleString('fa-IR')} SOD`;
-            document.getElementById('modalTomanBalance').textContent = `${(user.tomanBalance || 0).toLocaleString('fa-IR')} تومان`;
+            document.getElementById('walletSodBalance').textContent = (user.sod_balance || 0).toLocaleString('fa-IR');
+            document.getElementById('walletTomanBalance').textContent = (user.toman_balance || 0).toLocaleString('fa-IR');
+            document.getElementById('modalSodBalance').textContent = `${(user.sod_balance || 0).toLocaleString('fa-IR')} SOD`;
+            document.getElementById('modalTomanBalance').textContent = `${(user.toman_balance || 0).toLocaleString('fa-IR')} تومان`;
             
             // منو
-            document.getElementById('menuSodBalance').textContent = mobileClient.formatNumber(user.sodBalance);
-            document.getElementById('menuTomanBalance').textContent = mobileClient.formatNumber(user.tomanBalance);
-            document.getElementById('menuTotalEarned').textContent = mobileClient.formatNumber(user.totalEarned);
-            document.getElementById('inviteBadge').textContent = user.referralCount;
+            document.getElementById('menuSodBalance').textContent = mobileClient.formatNumber(user.sod_balance);
+            document.getElementById('menuTomanBalance').textContent = mobileClient.formatNumber(user.toman_balance);
+            document.getElementById('menuTotalEarned').textContent = mobileClient.formatNumber(user.total_earned);
+            document.getElementById('inviteBadge').textContent = user.referral_count;
             
             // دعوت دوستان
-            document.getElementById('referralCountMobile').textContent = `${user.referralCount} دوست دعوت کرده‌اید`;
-            document.getElementById('totalReferralEarningsMobile').textContent = mobileClient.formatNumber(user.referralEarnings);
-            document.getElementById('referralLinkMobile').textContent = user.referralLink;
-            document.getElementById('referralCodeMobile').textContent = user.referralCode;
+            document.getElementById('referralCountMobile').textContent = `${user.referral_count} دوست دعوت کرده‌اید`;
+            document.getElementById('totalReferralEarningsMobile').textContent = mobileClient.formatNumber(user.referral_earnings);
+            document.getElementById('referralLinkMobile').textContent = user.referral_link;
+            document.getElementById('referralCodeMobile').textContent = user.referral_code;
             
             // آمار دعوت
-            const referrals = mobileClient.userManager.getReferrals(user.id);
+            const referrals = await mobileClient.userManager.getReferrals(user.id);
             if (referrals) {
-                document.getElementById('totalInvitesMobile').textContent = referrals.totalInvites;
-                document.getElementById('activeInvitesMobile').textContent = referrals.activeInvites;
-                document.getElementById('pendingInvitesMobile').textContent = referrals.pendingInvites;
-                document.getElementById('totalEarnedInvitesMobile').textContent = mobileClient.formatNumber(referrals.totalEarned);
+                document.getElementById('totalInvitesMobile').textContent = referrals.total_invites;
+                document.getElementById('activeInvitesMobile').textContent = referrals.active_invites;
+                document.getElementById('pendingInvitesMobile').textContent = referrals.pending_invites;
+                document.getElementById('totalEarnedInvitesMobile').textContent = mobileClient.formatNumber(referrals.total_earned);
             }
             
             // مأموریت‌ها
@@ -3582,38 +3573,38 @@
             document.getElementById('profileName').textContent = user.name;
             document.getElementById('profilePhone').innerHTML = `<i class="fas fa-phone"></i> ${user.phone}`;
             document.getElementById('profileLevel').textContent = user.level;
-            document.getElementById('profileJoinDate').textContent = user.joinDate;
-            document.getElementById('profileLastLogin').textContent = user.lastLogin;
-            document.getElementById('profileReferrals').textContent = user.referralCount;
-            document.getElementById('profileTotalEarned').textContent = mobileClient.formatNumber(user.totalEarned);
-            document.getElementById('completedMissions').textContent = user.completedMissions || 0;
+            document.getElementById('profileJoinDate').textContent = user.join_date;
+            document.getElementById('profileLastLogin').textContent = user.last_login;
+            document.getElementById('profileReferrals').textContent = user.referral_count;
+            document.getElementById('profileTotalEarned').textContent = mobileClient.formatNumber(user.total_earned);
+            document.getElementById('completedMissions').textContent = user.completed_missions || 0;
             
             // مودال کاربر
             document.getElementById('modalUserAvatar').textContent = mobileClient.getAvatarFromName(user.name);
             document.getElementById('modalUserName').textContent = user.name;
-            document.getElementById('modalUserPhone').innerHTML = `<i class="fas fa-calendar-alt"></i> عضو از ${user.joinDate}`;
+            document.getElementById('modalUserPhone').innerHTML = `<i class="fas fa-calendar-alt"></i> عضو از ${user.join_date}`;
             document.getElementById('modalUserLevel').textContent = user.level;
-            document.getElementById('modalUserTotalEarned').textContent = mobileClient.formatNumber(user.totalEarned);
-            document.getElementById('modalUserReferrals').textContent = user.referralCount;
-            document.getElementById('modalUserMissions').textContent = user.completedMissions || 0;
+            document.getElementById('modalUserTotalEarned').textContent = mobileClient.formatNumber(user.total_earned);
+            document.getElementById('modalUserReferrals').textContent = user.referral_count;
+            document.getElementById('modalUserMissions').textContent = user.completed_missions || 0;
             
             // تراکنش‌ها
-            updateTransactionHistory();
+            await updateTransactionHistory();
             
             // نوتیفیکیشن‌ها
-            updateNotifications();
+            await updateNotifications();
             
             // نوتیفیکیشن بج
-            const unreadCount = mobileClient.userManager.getUnreadNotificationsCount(user.id);
+            const unreadCount = await mobileClient.userManager.getUnreadNotificationsCount(user.id);
             document.getElementById('notificationBadge').textContent = unreadCount > 0 ? unreadCount : '';
         }
 
         // به‌روزرسانی تاریخچه تراکنش‌ها
-        function updateTransactionHistory() {
+        async function updateTransactionHistory() {
             const user = mobileClient.currentUser;
             if (!user) return;
             
-            const transactions = mobileClient.userManager.getTransactions(user.id);
+            const transactions = await mobileClient.userManager.getTransactions(user.id);
             const container = document.getElementById('transactionHistory');
             container.innerHTML = '';
             
@@ -3666,11 +3657,11 @@
         }
 
         // به‌روزرسانی نوتیفیکیشن‌ها
-        function updateNotifications() {
+        async function updateNotifications() {
             const user = mobileClient.currentUser;
             if (!user) return;
             
-            const notifications = mobileClient.userManager.getNotifications(user.id);
+            const notifications = await mobileClient.userManager.getNotifications(user.id);
             const container = document.getElementById('notificationsList');
             container.innerHTML = '';
             
@@ -3692,10 +3683,10 @@
                     background: ${notification.read ? 'transparent' : 'rgba(0, 102, 255, 0.05)'};
                     cursor: pointer;
                 `;
-                notificationEl.onclick = () => {
-                    mobileClient.userManager.markNotificationAsRead(notification.id);
-                    updateNotifications();
-                    updateMobileUI();
+                notificationEl.onclick = async () => {
+                    await mobileClient.userManager.markNotificationAsRead(notification.id);
+                    await updateNotifications();
+                    await updateMobileUI();
                 };
                 notificationEl.innerHTML = `
                     <div style="font-size: 13px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">
@@ -3807,7 +3798,7 @@
 
         // ==================== عملکردهای احراز هویت ====================
         // ثبت‌نام
-        document.getElementById('registerFormElement').addEventListener('submit', function(e) {
+        document.getElementById('registerFormElement').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const name = document.getElementById('registerName').value.trim();
@@ -3859,36 +3850,33 @@
             registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت‌نام...';
             
             // ثبت‌نام کاربر
-            setTimeout(() => {
-                const result = mobileClient.userManager.register(name, phone, password, referralCode);
+            const result = await mobileClient.userManager.register(name, phone, password, referralCode);
+            
+            if (result.success) {
+                const message = referralCode ? 
+                    `حساب کاربری شما با موفقیت ایجاد شد! ${result.referralBonus} SOD پاداش دعوت دریافت کردید.` :
+                    'حساب کاربری شما با موفقیت ایجاد شد!';
                 
-                if (result.success) {
-                    const message = referralCode ? 
-                        `حساب کاربری شما با موفقیت ایجاد شد! ${result.referralBonus} SOD پاداش دعوت دریافت کردید.` :
-                        'حساب کاربری شما با موفقیت ایجاد شد!';
-                    
-                    showToastMobile('✅ ثبت‌نام موفق', message, 'success');
-                    
-                    // ورود خودکار
-                    mobileClient.currentUser = result.user;
-                    localStorage.setItem('sodmax_current_user', JSON.stringify(result.user));
-                    
-                    // نمایش اپلیکیشن
-                    setTimeout(() => {
-                        showApp();
-                        updateMobileUI();
-                        showSectionMobile('dashboard');
-                    }, 1500);
-                } else {
-                    showError('phoneError', result.message);
-                    registerBtn.disabled = false;
-                    registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> ایجاد حساب کاربری';
-                }
-            }, 1500);
+                showToastMobile('✅ ثبت‌نام موفق', message, 'success');
+                
+                // ورود خودکار
+                mobileClient.currentUser = result.user;
+                
+                // نمایش اپلیکیشن
+                setTimeout(() => {
+                    showApp();
+                    updateMobileUI();
+                    showSectionMobile('dashboard');
+                }, 1500);
+            } else {
+                showError('phoneError', result.message);
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> ایجاد حساب کاربری';
+            }
         });
 
         // ورود
-        document.getElementById('loginFormElement').addEventListener('submit', function(e) {
+        document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const phone = document.getElementById('loginPhone').value.trim();
@@ -3920,26 +3908,24 @@
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ورود...';
             
             // ورود کاربر
-            setTimeout(() => {
-                const result = mobileClient.userManager.login(phone, password);
+            const result = await mobileClient.userManager.login(phone, password);
+            
+            if (result.success) {
+                showToastMobile('✅ ورود موفق', `خوش آمدید ${result.user.name}!`, 'success');
                 
-                if (result.success) {
-                    showToastMobile('✅ ورود موفق', `خوش آمدید ${result.user.name}!`, 'success');
-                    
-                    mobileClient.currentUser = result.user;
-                    
-                    // نمایش اپلیکیشن
-                    setTimeout(() => {
-                        showApp();
-                        updateMobileUI();
-                        showSectionMobile('dashboard');
-                    }, 1500);
-                } else {
-                    showError('loginPhoneError', result.message);
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ورود به حساب';
-                }
-            }, 1500);
+                mobileClient.currentUser = result.user;
+                
+                // نمایش اپلیکیشن
+                setTimeout(() => {
+                    showApp();
+                    updateMobileUI();
+                    showSectionMobile('dashboard');
+                }, 1500);
+            } else {
+                showError('loginPhoneError', result.message);
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ورود به حساب';
+            }
         });
 
         // نمایش/پنهان کردن رمز عبور
@@ -3996,13 +3982,13 @@
         });
 
         // ==================== عملکردهای اصلی اپلیکیشن ====================
-        function manualMineMobile() {
+        async function manualMineMobile() {
             if (!mobileClient.currentUser) {
                 showToastMobile('⚠️ خطا', 'لطفاً ابتدا وارد شوید', 'error');
                 return;
             }
             
-            const earned = mobileClient.mine(mobileClient.currentUser);
+            const earned = await mobileClient.mine(mobileClient.currentUser);
             
             // پخش صدا
             const soundToggle = document.getElementById('soundToggle');
@@ -4026,10 +4012,10 @@
             showToastMobile('⚡ استخراج موفق', `+${earned} SOD دریافت کردید!`, 'success');
         }
 
-        function toggleAutoMiningMobile() {
+        async function toggleAutoMiningMobile() {
             if (!mobileClient.currentUser) return;
             
-            const isAutoMining = mobileClient.toggleAutoMining(mobileClient.currentUser);
+            const isAutoMining = await mobileClient.toggleAutoMining(mobileClient.currentUser);
             
             showToastMobile(
                 isAutoMining ? '🤖 استخراج خودکار' : '⏹️ استخراج دستی',
@@ -4040,10 +4026,10 @@
             updateMobileUI();
         }
 
-        function boostMiningMobile() {
+        async function boostMiningMobile() {
             if (!mobileClient.currentUser) return;
             
-            if (mobileClient.boostMining(mobileClient.currentUser)) {
+            if (await mobileClient.boostMining(mobileClient.currentUser)) {
                 updateMobileUI();
                 showToastMobile('⚡ افزایش قدرت', 'قدرت استخراج شما ۳ برابر شد! (۳۰ ثانیه)', 'success');
             } else {
@@ -4051,10 +4037,10 @@
             }
         }
 
-        function upgradeMinerMobile() {
+        async function upgradeMinerMobile() {
             if (!mobileClient.currentUser) return;
             
-            if (mobileClient.upgradeMiner(mobileClient.currentUser)) {
+            if (await mobileClient.upgradeMiner(mobileClient.currentUser)) {
                 updateMobileUI();
                 showToastMobile('🆙 ارتقاء موفق', 'قدرت ماینر +۵ افزایش یافت!', 'success');
             } else {
@@ -4062,17 +4048,17 @@
             }
         }
 
-        function completeMissionMobile(missionId) {
+        async function completeMissionMobile(missionId) {
             if (!mobileClient.currentUser) return;
             
-            const reward = mobileClient.completeMission(mobileClient.currentUser, missionId);
+            const reward = await mobileClient.completeMission(mobileClient.currentUser, missionId);
             if (reward) {
                 updateMobileUI();
                 showToastMobile('✅ مأموریت تکمیل شد', `+${reward.toLocaleString('fa-IR')} تومان دریافت کردید!`, 'success');
             }
         }
 
-        function claimRewardMobile(type) {
+        async function claimRewardMobile(type) {
             if (!mobileClient.currentUser) return;
             
             const user = mobileClient.currentUser;
@@ -4086,8 +4072,8 @@
             const reward = rewards[type];
             if (reward) {
                 if (type === 'sod') {
-                    user.sodBalance += reward.amount;
-                    mobileClient.userManager.addTransaction(user.id, {
+                    user.sod_balance += reward.amount;
+                    await mobileClient.userManager.addTransaction(user.id, {
                         type: "پاداش SOD",
                         amount: reward.amount,
                         currency: "SOD",
@@ -4097,8 +4083,8 @@
                     });
                 }
                 if (type === 'toman') {
-                    user.tomanBalance += reward.amount;
-                    mobileClient.userManager.addTransaction(user.id, {
+                    user.toman_balance += reward.amount;
+                    await mobileClient.userManager.addTransaction(user.id, {
                         type: "پاداش تومان",
                         amount: reward.amount,
                         currency: "تومان",
@@ -4108,26 +4094,26 @@
                     });
                 }
                 if (type === 'boost') {
-                    user.miningMultiplier = Math.max(user.miningMultiplier, 3);
+                    user.mining_multiplier = Math.max(user.mining_multiplier, 3);
                     mobileClient.boostEndTime = Date.now() + 30000;
                     mobileClient.startBoostTimer();
                 }
                 
-                mobileClient.userManager.updateUser(user);
+                await mobileClient.userManager.updateUser(user);
                 updateMobileUI();
                 showToastMobile('🎁 پاداش دریافت شد', reward.message, 'success');
             }
         }
 
-        function claimAllRewardsMobile() {
+        async function claimAllRewardsMobile() {
             if (!mobileClient.currentUser) return;
             
             const user = mobileClient.currentUser;
-            user.sodBalance += 10000;
-            user.tomanBalance += 5000;
-            user.miningMultiplier = Math.max(user.miningMultiplier, 3);
+            user.sod_balance += 10000;
+            user.toman_balance += 5000;
+            user.mining_multiplier = Math.max(user.mining_multiplier, 3);
             
-            mobileClient.userManager.addTransaction(user.id, {
+            await mobileClient.userManager.addTransaction(user.id, {
                 type: "دریافت همه پاداش‌ها",
                 amount: 10000,
                 currency: "SOD",
@@ -4136,7 +4122,7 @@
                 color: "var(--primary)"
             });
             
-            mobileClient.userManager.addTransaction(user.id, {
+            await mobileClient.userManager.addTransaction(user.id, {
                 type: "دریافت همه پاداش‌ها",
                 amount: 5000,
                 currency: "تومان",
@@ -4148,20 +4134,20 @@
             mobileClient.boostEndTime = Date.now() + 30000;
             mobileClient.startBoostTimer();
             
-            mobileClient.userManager.updateUser(user);
+            await mobileClient.userManager.updateUser(user);
             updateMobileUI();
             showToastMobile('🎁 همه پاداش‌ها', 'تمام پاداش‌ها دریافت شدند!', 'success');
         }
 
-        function claimDailyReward() {
+        async function claimDailyReward() {
             if (!mobileClient.currentUser) return;
             
             const user = mobileClient.currentUser;
             const reward = 1000;
-            user.tomanBalance += reward;
-            user.totalEarned += reward;
+            user.toman_balance += reward;
+            user.total_earned += reward;
             
-            mobileClient.userManager.addTransaction(user.id, {
+            await mobileClient.userManager.addTransaction(user.id, {
                 type: "پاداش روزانه",
                 amount: reward,
                 currency: "تومان",
@@ -4170,15 +4156,15 @@
                 color: "var(--secondary)"
             });
             
-            mobileClient.userManager.updateUser(user);
+            await mobileClient.userManager.updateUser(user);
             updateMobileUI();
             showToastMobile('📅 پاداش روزانه', `+${reward.toLocaleString('fa-IR')} تومان دریافت کردید!`, 'success');
         }
 
-        function withdrawTomanMobile() {
+        async function withdrawTomanMobile() {
             if (!mobileClient.currentUser) return;
             
-            const amount = mobileClient.withdrawToman(mobileClient.currentUser);
+            const amount = await mobileClient.withdrawToman(mobileClient.currentUser);
             if (amount) {
                 updateMobileUI();
                 showToastMobile('✅ درخواست ثبت شد', 
@@ -4228,7 +4214,7 @@
             showToastMobile('🌐 زبان و منطقه', 'تنظیمات زبان به زودی فعال خواهد شد!', 'info');
         }
 
-        function logoutMobile() {
+        async function logoutMobile() {
             if (confirm('آیا از خروج از حساب کاربری خود مطمئن هستید؟')) {
                 showToastMobile('👋 خروج از حساب', 'در حال خروج...', 'info');
                 
@@ -4253,7 +4239,7 @@
             const user = mobileClient.currentUser;
             if (!user) return;
             
-            const link = user.referralLink;
+            const link = user.referral_link;
             
             // استفاده از Clipboard API در صورت موجود بودن
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -4271,7 +4257,7 @@
             const user = mobileClient.currentUser;
             if (!user) return;
             
-            const code = user.referralCode;
+            const code = user.referral_code;
             
             // استفاده از Clipboard API در صورت موجود بودن
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -4309,7 +4295,7 @@
             const user = mobileClient.currentUser;
             if (!user) return;
             
-            const message = `به SODmAX CityVerse بپیوندید! 🌟\n\nبا استفاده از لینک زیر ثبت‌نام کنید و ۱۰۰۰ SOD هدیه دریافت کنید:\n${user.referralLink}\n\nکد دعوت: ${user.referralCode}`;
+            const message = `به SODmAX CityVerse بپیوندید! 🌟\n\nبا استفاده از لینک زیر ثبت‌نام کنید و ۱۰۰۰ SOD هدیه دریافت کنید:\n${user.referral_link}\n\nکد دعوت: ${user.referral_code}`;
             const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
             
             window.open(url, '_blank');
@@ -4320,8 +4306,8 @@
             const user = mobileClient.currentUser;
             if (!user) return;
             
-            const message = `به SODmAX CityVerse بپیوندید! 🌟\n\nبا استفاده از لینک زیر ثبت‌نام کنید و ۱۰۰۰ SOD هدیه دریافت کنید:\n${user.referralLink}\n\nکد دعوت: ${user.referralCode}`;
-            const url = `https://t.me/share/url?url=${encodeURIComponent(user.referralLink)}&text=${encodeURIComponent(message)}`;
+            const message = `به SODmAX CityVerse بپیوندید! 🌟\n\nبا استفاده از لینک زیر ثبت‌نام کنید و ۱۰۰۰ SOD هدیه دریافت کنید:\n${user.referral_link}\n\nکد دعوت: ${user.referral_code}`;
+            const url = `https://t.me/share/url?url=${encodeURIComponent(user.referral_link)}&text=${encodeURIComponent(message)}`;
             
             window.open(url, '_blank');
             showToastMobile('📱 اشتراک‌گذاری', 'در حال بازکردن تلگرام...', 'info');
@@ -4331,16 +4317,16 @@
             showToastMobile('📱 اینستاگرام', 'اشتراک‌گذاری در اینستاگرام به زودی فعال خواهد شد!', 'info');
         }
 
-        function inviteFriendMobile() {
+        async function inviteFriendMobile() {
             if (!mobileClient.currentUser) return;
             
-            if (mobileClient.inviteFriend(mobileClient.currentUser)) {
+            if (await mobileClient.inviteFriend(mobileClient.currentUser)) {
                 updateMobileUI();
                 showToastMobile('🤝 دعوت ارسال شد', 'دعوت شما ثبت شد. بعد از تأیید دوستتان، ۱,۰۰۰ تومان پاداش دریافت خواهید کرد!', 'info');
                 
                 // شبیه‌سازی تأیید دعوت بعد از 3 ثانیه
-                setTimeout(() => {
-                    mobileClient.confirmReferral(mobileClient.currentUser.id);
+                setTimeout(async () => {
+                    await mobileClient.confirmReferral(mobileClient.currentUser.id);
                     updateMobileUI();
                     showToastMobile('🤝 دعوت تأیید شد', 'دوست شما ثبت‌نام و تأیید شد! +۱,۰۰۰ تومان پاداش دریافت کردید.', 'success');
                 }, 3000);
@@ -4440,22 +4426,20 @@
         //     // testQuickLogin();
         // });
 
-        function testQuickLogin() {
+        async function testQuickLogin() {
             // تست سریع با کاربر پیش‌فرض
             const testUser = {
                 phone: "09123456789",
                 password: "123456"
             };
             
-            setTimeout(() => {
-                const result = mobileClient.userManager.login(testUser.phone, testUser.password);
-                if (result.success) {
-                    mobileClient.currentUser = result.user;
-                    showApp();
-                    updateMobileUI();
-                    console.log('✅ تست سریع موفق - کاربر وارد شد');
-                }
-            }, 500);
+            const result = await mobileClient.userManager.login(testUser.phone, testUser.password);
+            if (result.success) {
+                mobileClient.currentUser = result.user;
+                showApp();
+                updateMobileUI();
+                console.log('✅ تست سریع موفق - کاربر وارد شد');
+            }
         }
     </script>
 </body>
